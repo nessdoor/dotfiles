@@ -1,0 +1,32 @@
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
+" vim-plug section
+call plug#begin('~/.vim/plugged')
+
+" Register vim-plug as plugin for online help
+Plug 'junegunn/vim-plug'
+
+" Sensible defaults
+Plug 'tpope/vim-sensible'
+
+" Autocompletion
+Plug 'Valloric/YouCompleteMe'
+
+call plug#end()
+
+set number
+color slate
+
+" Tabulation config
+set tabstop=4
+set shiftwidth=4
+set expandtab
+
+" Line/column highlighting
+set cursorline
+set cursorcolumn
+
