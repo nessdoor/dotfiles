@@ -1,0 +1,8 @@
+#!/bin/bash
+
+BG=.config/sway/background
+TEMP=$(mktemp /tmp/lck_bg.XXX)
+
+convert $BG -blur 0x3 $TEMP
+swaylock -i $TEMP
+rm $TEMP

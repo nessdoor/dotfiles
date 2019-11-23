@@ -1,0 +1,39 @@
+### Applications
+#
+# Terminal emulator
+set $term urxvt
+
+# Shell
+set $shell {{ .gui_shell }}
+
+# File manager
+set $filemanager {{ .gui_filemanager }}
+
+# Launcher
+set $menu dmenu_path | dmenu | xargs swaymsg exec
+
+# Screen locker
+# Points to the screen-locking script in the parent directory
+set $locker ~/.config/sway/lockscreen
+
+# Music player
+set $music {{ .gui_musicplayer }}
+
+
+### Bindings
+#
+    # Terminal
+    bindsym $mod+Return exec $term -e $shell
+
+    # File manager
+    bindsym $mod+Shift+r exec $term -e $filemanager
+
+    # Launcher
+    bindsym $mod+d exec $menu
+
+    # Lock screen
+    bindsym $mod+Shift+v exec $locker
+
+    # Music player
+    bindsym $mod+n exec $term -e $music
+

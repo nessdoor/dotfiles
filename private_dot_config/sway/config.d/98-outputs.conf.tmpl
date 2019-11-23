@@ -1,0 +1,11 @@
+### Output configuration
+#
+{{- if eq .chezmoi.hostname "navi" }}
+    # Output configuration for home workstation
+    output VGA-1 resolution 1280x1024 position 0,0
+    output HDMI-A-1 resolution 1920x1080 position 1280,0
+{{- end }}
+
+    # Set background
+    output * bg $background fill
+

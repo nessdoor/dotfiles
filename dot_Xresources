@@ -1,0 +1,4 @@
+URxvt.foreground: #E0C9C1
+URxvt*depth: 32
+URxvt*background: rgba:0000/0223/0312/a900
+URxvt.scrollBar: false
