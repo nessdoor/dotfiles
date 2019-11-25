@@ -28,5 +28,6 @@ set expandtab
 
 " Line/column highlighting
 set cursorline
+hi CursorLine cterm=NONE ctermbg=DarkRed ctermfg=black
 set cursorcolumn
 
