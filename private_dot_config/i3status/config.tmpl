@@ -14,6 +14,9 @@ general {
 
 order += "disk /home/tlopez"
 order += "memory"
+{{- if eq .chezmoi.hostname "stratofortress" }}
+order += "battery all"
+{{- end }}
 order += "tztime local"
 
 disk "/home/tlopez" {
@@ -23,6 +26,12 @@ disk "/home/tlopez" {
 memory {
         format = "%used/%total MEM"
 }
+
+{{- if eq .chezmoi.hostname "stratofortress" }}
+battery all {
+        format = "%percentage %status"
+}
+{{- end }}
 
 tztime local {
         format = "%Y-%m-%d %H:%M:%S"
