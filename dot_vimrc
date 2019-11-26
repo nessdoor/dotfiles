@@ -27,7 +27,13 @@ set shiftwidth=4
 set expandtab
 
 " Line/column highlighting
-set cursorline
+augroup Cursors
+    au!
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorline
+    au VimEnter,WinEnter,BufWinEnter * setlocal cursorcolumn
+    au WinLeave * setlocal nocursorline
+    au WinLeave * setlocal nocursorcolumn
+augroup END
+
 hi CursorLine cterm=NONE ctermbg=124 ctermfg=black
-set cursorcolumn
 
