@@ -35,5 +35,5 @@ augroup Cursors
     au WinLeave * setlocal nocursorcolumn
 augroup END
 
-hi CursorLine cterm=NONE ctermbg=124 ctermfg=black
+hi CursorLine cterm=NONE ctermbg=52
 
