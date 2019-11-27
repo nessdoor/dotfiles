@@ -1,7 +1,7 @@
 ### Applications
 #
 # Terminal emulator
-set $term urxvt
+set $term {{- if eq .chezmoi.hostname "navi" }} urxvt {{- else }} urxvt256c-ml {{- end }}
 
 # Shell
 set $shell {{ .gui_shell }}
