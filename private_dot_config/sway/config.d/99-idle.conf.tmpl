@@ -1,10 +1,7 @@
-# TODO remove conditional inclusion when F30 will have swayidle too
-{{- if eq .chezmoi.hostname "navi" }}
 ### Autolock and energy-saving options
 exec swayidle -w \
           timeout 480 '$locker' \
           timeout 600 'swaymsg "output * dpms off"' \
                resume 'swaymsg "output * dpms on"' \
           before-sleep '$locker'
-{{- end }}
 
