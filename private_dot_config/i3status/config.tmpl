@@ -12,14 +12,14 @@ general {
         interval = 1
 }
 
-order += "disk /home/tlopez"
+order += "disk {{ .home_part }}"
 order += "memory"
 {{- if eq .chezmoi.hostname "stratofortress" }}
 order += "battery all"
 {{- end }}
 order += "tztime local"
 
-disk "/home/tlopez" {
+disk "{{ .home_part }}" {
         format = "%percentage_used DSK"
 }
 
