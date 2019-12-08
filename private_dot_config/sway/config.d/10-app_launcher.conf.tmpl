@@ -37,3 +37,6 @@ set $music {{ .gui_musicplayer }}
     # Music player
     bindsym $mod+n exec $term -e $music
 
+    # Screenshot
+    bindsym --release Print exec grim -g \"$(slurp)" - | wl-copy
+
