@@ -41,4 +41,5 @@ augroup Cursors
 augroup END
 
 hi CursorLine cterm=bold ctermbg=52
+hi CursorColumn ctermbg=240
 
