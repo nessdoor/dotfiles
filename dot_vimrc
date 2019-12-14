@@ -21,6 +21,9 @@ Plug 'Valloric/YouCompleteMe'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
 
+" Universal repeater
+Plug 'tpope/vim-repeat'
+
 call plug#end()
 
 set number
