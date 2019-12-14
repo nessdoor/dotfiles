@@ -27,6 +27,7 @@ Plug 'tpope/vim-repeat'
 call plug#end()
 
 set number
+set title
 color slate
 
 " Tabulation config
