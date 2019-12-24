@@ -16,6 +16,7 @@ order += "disk {{ .home_part }}"
 order += "memory"
 {{- if eq .chezmoi.hostname "stratofortress" }}
 order += "battery all"
+order += "wireless wlp3s0"
 {{- end }}
 order += "tztime local"
 
@@ -30,6 +31,11 @@ memory {
 {{- if eq .chezmoi.hostname "stratofortress" }}
 battery all {
         format = "%percentage %status"
+}
+
+wireless wlp3s0 {
+   format_up = "%quality (%essid) Wconn"
+   format_down = "W: down"
 }
 {{- end }}
 
