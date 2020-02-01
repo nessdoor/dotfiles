@@ -24,6 +24,15 @@ Plug 'tpope/vim-surround'
 " Universal repeater
 Plug 'tpope/vim-repeat'
 
+" Racket support
+Plug 'wlangstroth/vim-racket'
+
+" LaTeX aids
+Plug 'lervag/vimtex'
+
+" NERDTree
+Plug 'preservim/nerdtree'
+
 call plug#end()
 
 set number
