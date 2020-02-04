@@ -33,6 +33,9 @@ Plug 'lervag/vimtex'
 " NERDTree
 Plug 'preservim/nerdtree'
 
+" Haskell support
+Plug 'neovimhaskell/haskell-vim'
+
 call plug#end()
 
 set number
