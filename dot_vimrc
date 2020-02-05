@@ -36,6 +36,10 @@ Plug 'preservim/nerdtree'
 " Haskell support
 Plug 'neovimhaskell/haskell-vim'
 
+" Erlang support
+Plug 'vim-erlang/vim-erlang-compiler'
+Plug 'vim-erlang/vim-erlang-omnicomplete'
+
 call plug#end()
 
 set number
