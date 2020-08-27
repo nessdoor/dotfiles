@@ -24,6 +24,21 @@ Plug 'tpope/vim-surround'
 " Universal repeater
 Plug 'tpope/vim-repeat'
 
+" Syntastic
+Plug 'scrooloose/syntastic'
+
+" Git integration
+Plug 'tpope/vim-fugitive'
+
+" Extra C, Bison and Flex syntax support
+Plug 'justinmk/vim-syntax-extra'
+
+" Status line
+Plug 'vim-airline/vim-airline'
+
+" Markdown aids
+Plug 'plasticboy/vim-markdown'
+
 " Racket support
 Plug 'wlangstroth/vim-racket'
 
@@ -45,6 +60,7 @@ call plug#end()
 set number
 set title
 color slate
+set breakindent
 
 " Tabulation config
 set tabstop=4
@@ -62,4 +78,18 @@ augroup END
 
 hi CursorLine cterm=bold ctermbg=52
 hi CursorColumn ctermbg=240
+
+" YCM config
+let g:ycm_autoclose_preview_window_after_completion = 1
+
+" Syntastic config
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+let g:syntastic_shell = "/bin/bash"
 
