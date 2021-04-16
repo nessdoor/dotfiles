@@ -1,0 +1,1046 @@
+-*- eval: (display-line-numbers-mode); -*-
+#+STARTUP: overview
+#+STARTUP: hidestars
+
+* Package management
+  Initialize the built-in package manager.
+#+begin_src emacs-lisp
+  (require 'package)
+#+end_src
+
+** MELPA
+   Add MELPA to the list of repositories.
+#+begin_src emacs-lisp
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+#+end_src
+
+** Init
+   Once the early package management configuration is done, load and
+   activate packages.
+#+begin_src emacs-lisp
+  (package-initialize)
+#+end_src
+
+** use-package
+   Ensure that [[https://github.com/jwiegley/use-package][use-package]] is installed.
+#+begin_src emacs-lisp
+  (when (not (package-installed-p 'use-package))
+    (package-refresh-contents)
+    (package-install 'use-package))
+#+end_src
+   And make absolutely sure that it is evaluated, even if this file
+   gets compiled (read the [[help:eval-when-compile][manual page]] for more information).
+#+begin_src emacs-lisp
+  (eval-when-compile
+    (require 'use-package))
+#+end_src
+
+* Customize
+** Customize plug-in point
+    Set the path where M-x customize saves its settings, and load from it.
+#+begin_src emacs-lisp
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (load custom-file)
+#+end_src
+
+** Unsaved options warning prompt
+    With this, Emacs prompts the user if there are non-permanent
+    customization options that would be lost on termination.
+#+begin_src emacs-lisp
+  (add-hook 'kill-emacs-query-functions 'custom-prompt-customize-unsaved-options)
+#+end_src
+
+* Packages
+  What follows are the configuration directives for all third-party
+  packages.
+
+** General purpouse
+   The following packages bring general-purpouse enhancements to the
+   entirety of Emacs.
+
+*** Delight
+    Ensure that [[https://elpa.gnu.org/packages/delight.html][Delight]] is installed, since it will be used for hiding
+    some modelines in ~use-package~ directives.
+#+begin_src emacs-lisp
+  (use-package delight :ensure t)
+#+end_src
+
+*** Evil
+    [[https://github.com/emacs-evil/evil][Evil]]
+
+    Ensure that the package is installed and that it is loaded as soon
+    as possible.
+#+begin_src emacs-lisp
+  (use-package evil
+    :ensure t
+    :demand t
+#+end_src
+    Then, activate Evil globally.
+#+begin_src emacs-lisp
+    :config
+    (evil-mode 1)
+#+end_src
+**** Tree undo system
+     Wire [[*undo-tree][undo-tree]] to the [[help:evil-undo][evil-undo]] function. This way, Evil undo
+     results in and undo command on the tree, permitting forking
+     histories.
+
+     For this, the relevant package and [[help:undo-tree-mode][undo-tree-mode]] needs to be
+     enabled globally before Evil starts.
+#+begin_src emacs-lisp
+  :after undo-tree)
+#+end_src
+
+**** Evil extras
+     Extra functionalities ported from Vim, enabled globally.
+ 
+***** Surround
+      [[https://github.com/emacs-evil/evil-surround][evil-surround]], an Evil port of [[https://github.com/tpope/vim-surround][vim-surround]].
+#+begin_src emacs-lisp
+  (use-package evil-surround
+    :ensure t
+    :after evil
+    :config (global-evil-surround-mode 1))
+#+end_src
+
+***** Matchit
+      [[https://github.com/redguardtoo/evil-matchit][evil-matchit]], an Evil porting of [[https://www.vim.org/scripts/script.php?script_id=39][matchit.vim]].
+#+begin_src emacs-lisp
+  (use-package evil-matchit
+    :ensure t
+    :after evil
+    :config (global-evil-matchit-mode 1))
+#+end_src
+
+***** Numbers
+      Easy number increment and decrement.
+#+begin_src emacs-lisp
+  (use-package evil-numbers
+    :ensure t
+    :after evil
+#+end_src
+     Bind the increment and decrement functions to ~C-c +/-~.
+#+begin_src emacs-lisp
+    :bind (("C-c +" . evil-numbers/inc-at-pt)
+           ("C-c -" . evil-numbers/dec-at-pt)))
+#+end_src
+
+***** evil-org
+      [[https://github.com/Somelauw/evil-org-mode][Repo]]
+
+      Activate Vim-like byndings in Org.
+#+begin_src emacs-lisp
+  (use-package evil-org
+    :ensure t
+    :after org
+    :delight evil-org-mode
+    :hook (org-mode . evil-org-mode)
+    :config 
+#+end_src
+      Refer to [[https://github.com/Somelauw/evil-org-mode/blob/master/doc/keythemes.org][the official key tables]] to see what each key theme
+      brings to the table.
+#+begin_src emacs-lisp
+    (evil-org-set-key-theme
+     '(navigation insert textobjects additional calendar))
+#+end_src
+
+****** Agenda support
+       Enable Evil keys in Org's agenda view.
+#+begin_src emacs-lisp
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys)
+#+end_src
+
+****** Special beginning/end-of-line commands
+       Make commands that go to the beginning or to the end of a line
+       ignore leading stars or bullets and trailing tags, respectively.
+#+begin_src emacs-lisp
+  :custom
+  (org-special-ctrl-a/e t))
+#+end_src
+
+*** undo-tree
+    Replace the stock undo system with [[https://github.com/apchamberlain/undo-tree.el][undo-tree]], allowing for forking
+    undo/redo histories.
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :demand t
+    :delight undo-tree-mode
+    :config
+    (global-undo-tree-mode 1))
+#+end_src
+
+*** Company
+    Register [[http://company-mode.github.io/][Company]], the modular autocompleter, and make it available
+    everywhere.
+#+begin_src emacs-lisp
+  (use-package company
+    :ensure t
+    :delight company-mode
+    :hook (after-init . global-company-mode)
+#+end_src
+
+**** Autocompletion responsiveness
+     Make autocompletion more responsive by both shortening the minimum prefix
+     used for picking completions, and diminishing the delay between last
+     keypress and completion popup appearance.
+#+begin_src emacs-lisp
+    :custom
+    (company-minimum-prefix-length 1)
+    (company-idle-delay 0.1)
+#+end_src
+
+**** Pesky downcasing
+     By default, [[help:company-dabbrev][company-dabbrev]] downcases all of its completions. Make
+     it stop.
+#+begin_src emacs-lisp
+  (company-dabbrev-downcase nil)
+#+end_src
+     In addition, unset [[help:company-dabbrev-ignore-case][company-dabbrev-ignore-case]] from
+     'keep-prefix'. With this set, the topmost completion candidates
+     could have a different casing than desired, leading to some
+     annoying additional editing.
+#+begin_src emacs-lisp
+  (company-dabbrev-ignore-case nil))
+#+end_src
+
+*** YASnippet
+    Load [[https://github.com/joaotavora/yasnippet][YASnippet]] and reload all snippets, being careful to make sure
+    that the [[*Premade snippets][premade snippets]] are already present and that [[*Company][Company]] is
+    loaded (see [[*company-yasnippet backend][company-yasnippet backend]]).
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :after (yasnippet-snippets company)
+    :config
+    (yas-reload-all)
+#+end_src
+
+**** company-yasnippet backend
+     According to [[help:company-yasnippet][the manual page]], company-yasnippet is not the most
+     well-behaving backend, since it stops all others from continuing
+     its work.
+
+     Due to its universal nature, company-dabbrev behaves in a similar
+     way, but never fails to provide completions. That's the reason why
+     it is placed at the end of the chain.
+
+     Therefore, in order to make the YASnippet backend available
+     without compromising the functionality of all the other backends,
+     it looks like that a good choice would be to group it with the
+     Dabbrev one.
+
+     The following code does exactly this. For some reason, it didn't
+     work when set as a hook for the YAS minor mode, therefore it
+     modifies the global list directly.
+#+begin_src emacs-lisp
+  (setq company-backends (nreverse company-backends))
+  (setcar company-backends `(,(car company-backends) :with company-yasnippet))
+  (setq company-backends (nreverse company-backends))
+#+end_src
+
+     Remember that the group needs to be a well-formed list, not a cons
+     cell.
+
+**** Hooking
+     Hook the YASnippet minor mode to various modes where it can be
+     useful.
+#+begin_src emacs-lisp
+  :hook ((prog-mode org-mode) . yas-minor-mode))
+#+end_src
+
+**** Premade snippets
+     Make sure to have [[https://github.com/AndreaCrotti/yasnippet-snippets][Andrea Crotti's snippets]] around.
+#+begin_src emacs-lisp
+  (use-package yasnippet-snippets :ensure t)
+#+end_src
+
+***** TODO Helm completion
+      Use the Helm interface to fill in snippets.
+ #+begin_src emacs-lisp
+   (require 'helm)
+   (defun shk-yas/helm-prompt (prompt choices &optional display-fn)
+       "Use helm to select a snippet. Put this into `yas-prompt-functions.'"
+       (interactive)
+       (if (require 'helm-config nil t)
+           (let ((result (helm-other-buffer
+                          (list `((name . ,prompt)
+                                  (candidates . ,(if display-fn (mapcar display-fn choices)
+                                                   choices))
+                                  (action . (("Expand" . identity)))))
+                          "*helm-select-yasnippet")))
+             (cond ((null results)
+                    (signal 'quit "user quit!"))
+                   (display-fn
+                    (catch 'result
+                      (dolist (choice choices)
+                        (when (equal (funcall display-fn choice) result)
+                          (throw 'result choice)))))
+                   (t result)))
+         nil))
+   (push 'shk-yas/helm-prompt yas-prompt-functions)
+ #+end_src
+
+*** The Ivy/Counsel/Swiper stack
+    [[https://github.com/abo-abo/swiper][Repo]], [[https://oremacs.com/swiper/][User manual]]
+
+**** Ivy
+     Activate Ivy as a generic completion backend.
+#+begin_src emacs-lisp
+  (use-package ivy
+    :ensure t
+    :delight ivy-mode
+#+end_src
+     Activate Ivy everywhere.
+#+begin_src emacs-lisp
+    :config
+    (ivy-mode 1)
+    :custom
+#+end_src
+
+***** Virtual buffers
+      Make it so that recent files and bookmarks end up as completion
+      candidates for buffers, skipping explicit opening.
+#+begin_src emacs-lisp
+    (ivy-use-virtual-buffers t)
+#+end_src
+
+***** Completion candidates minibuffer format
+      Set the format string for completion candidates counters.
+#+begin_src emacs-lisp
+  (ivy-count-format "(%d/%d) "))
+#+end_src
+
+**** Counsel
+     Activate Counsel mode, replacing common Emacs functions and
+     commands with their Ivy reimplementations.
+#+begin_src emacs-lisp
+  (use-package counsel
+    :ensure t
+    :demand t
+    :after ivy
+    :delight counsel-mode
+    :config
+    (counsel-mode 1))
+#+end_src
+
+**** Swiper
+     Set Swiper as the default Emacs-style search interface, providing
+     previews of matched lines.
+#+begin_src emacs-lisp
+  (use-package swiper
+    :ensure t
+    :after ivy
+    :bind ("C-s" . swiper-isearch))
+#+end_src
+
+*** Drag stuff
+    [[https://github.com/rejeep/drag-stuff.el][Repo]]
+
+    Register some handy functions and bindings for dragging textual
+    units around.
+#+begin_src emacs-lisp
+  (use-package drag-stuff
+    :ensure t
+    :demand t
+    :config
+    (drag-stuff-global-mode 1)
+    (drag-stuff-define-keys)
+#+end_src
+
+**** Don't overlap with Org functionalities
+     Org already supports dragging outlines around, and this is
+     shadowed by drag-stuff. For now, disable it in org-mode.
+#+begin_src emacs-lisp
+    (add-to-list 'drag-stuff-except-modes 'org-mode))
+#+end_src
+
+*** Powerline
+    [[https://github.com/milkypostman/powerline][Repo]]
+
+    The Vim [[https://github.com/powerline/powerline][Powerline]] status line, but for Emacs.
+ #+begin_src emacs-lisp
+   (use-package powerline
+     :ensure t
+     :demand t
+ #+end_src
+
+**** Theme
+     Use the centered theme, with the [[*Evil][Evil]] mode indicator in the middle.
+#+begin_src emacs-lisp
+     :config
+     (powerline-center-evil-theme))
+#+end_src
+
+*** pdf-tools
+    Replace DocView with [[https://github.com/politza/pdf-tools][PDF Tools]].
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install :no-query :skip-dependencies)
+#+end_src
+ 
+**** Activation
+     The mode needs to be activated as soon as a PDF file is
+     opened. Register the extension for automatic activation.
+#+begin_src emacs-lisp
+    :magic ("%PDF" . pdf-view-mode))
+#+end_src
+
+*** Crosshairs
+    [[https://www.emacswiki.org/emacs/CrosshairHighlighting][Wiki page]]
+
+    Highlight line and column where the cursor currently is. It was
+    easy to achieve in Vim, but in Emacs the implementation is a
+    little weak.
+#+begin_src emacs-lisp
+  (use-package crosshairs
+    :load-path "manual-packages/crosshairs/")
+#+end_src
+
+*** Dired+
+    [[https://www.emacswiki.org/emacs/DiredPlus][Wiki page]]
+#+begin_src emacs-lisp
+  (use-package dired+
+    :load-path "manual-packages/dired+/")
+#+end_src
+
+*** Iedit
+    [[https://github.com/victorhge/iedit][Iedit]] allows to edit matched text in a parallel way.
+#+begin_src emacs-lisp
+  (use-package iedit :ensure t)
+#+end_src
+
+**** Keybinds
+     By default, Iedit is activated by =C-;= but, since that key is
+     already being used by [[help:;][Evil]] everywhere, we remap it to =C-c ;=.
+#+begin_src emacs-lisp
+  ;:bind
+  ;("C-c ;" . iedit-mode))
+#+end_src
+
+**** evil-iedit-state
+     [[https://github.com/syl20bnr/evil-iedit-state][Repo]]
+
+     Adds two new Iedit states to [[*Evil][Evil]], for a slick integration.
+#+begin_src emacs-lisp
+  (use-package evil-iedit-state
+    :ensure t
+    :after (evil iedit))
+#+end_src
+
+** Programming support
+   The packages that follow add various features to aid in program
+   development.
+
+*** nix-mode
+    [[https://github.com/NixOS/nix-mode][Repo]]
+
+    Major mode for editing Nix expressions.
+ #+begin_src emacs-lisp
+   (use-package nix-mode
+     :mode "\\.nix\\'")
+ #+end_src
+
+*** LSP
+    [[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
+   
+    Load lsp-mode.
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+    :commands lsp lsp-deferred
+#+end_src
+
+**** Mode hooks
+     Here is the place to register which modes trigger the activation
+     of LSP.
+#+begin_src emacs-lisp
+  :hook
+  ((c-mode . lsp-deferred)
+   (python-mode . lsp-deferred)
+   (scala-mode . lsp-deferred)))
+#+end_src
+
+**** Extras
+***** LSP UI
+      [[https://emacs-lsp.github.io/lsp-ui/][Homepage]]
+
+      Show documentation and [[https://www.flycheck.org/en/latest/index.html][Flycheck]] errors on overlays.
+#+begin_src emacs-lisp
+  (use-package lsp-ui
+    :after lsp-mode
+    :commands lsp-ui-mode)
+#+end_src
+
+**** Integrations
+***** Helm
+      [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides an Helm interface for symbol querying on a
+      project.
+#+begin_src emacs-lisp
+  (use-package helm-lsp
+    :after lsp-mode
+    :commands helm-lsp-workspace-symbol
+#+end_src
+
+****** Bindings
+      Replace standard Xref apropos search with [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]].
+#+begin_src emacs-lisp
+    :bind
+    (:map lsp-mode-map
+          ([remap xref-find-apropos] . helm-lsp-workspace-symbol)))
+#+end_src
+
+***** Treemacs
+      [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] synchronizes [[*Treemacs][Treemacs]] projects and LSP workspaces.
+#+begin_src emacs-lisp
+  (use-package lsp-treemacs
+    :after lsp-mode
+    :commands lsp-treemacs-errors-list
+    :config
+    (lsp-treemacs-sync-mode 1))
+#+end_src
+
+**** Language servers
+***** C (CCLS)
+      [[https://github.com/MaskRay/ccls][CCLS]] is a language server for C, C++ and Objective-C. It must be
+      available on the PATH, since it is an external binary.
+
+      Emacs can connect to CCLS as an LSP client via [[https://github.com/MaskRay/emacs-ccls][emacs-ccls]].
+#+begin_src emacs-lisp
+  (use-package ccls
+    :after lsp-mode
+    :hook ((c-mode c++-mode objc-mode) . (lambda ()
+                                           (require 'ccls))))
+#+end_src
+
+***** C (remote) (clangd)
+      Use [[https://clangd.llvm.org/][clangd]] as a remote C language server, since it is pretty
+      easy to find it preinstalled on remote development machines.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'lsp-mode
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
+                      :major-modes '(c-mode)
+                      :remote? t
+                      :server-id 'clangd-remote)))
+#+end_src
+
+***** Python (remote) (pyls)
+      Use [[https://github.com/palantir/python-language-server][Python Language Server]] instance as a remote Python language
+      server.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'lsp-mode
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-tramp-connection "pyls")
+                      :major-modes '(python-mode)
+                      :remote? t
+                      :server-id 'pyls-remote)))
+#+end_src
+
+***** Scala
+      Support Scala via [[https://scalameta.org/metals/][Metals]].
+#+begin_src emacs-lisp
+  (use-package lsp-metals
+    :after (scala-mode sbt-mode lsp-mode)
+    :config
+    (setq lsp-metals-treeview-show-when-views-received t))
+#+end_src
+
+***** Nix
+      Use [[https://github.com/nix-community/rnix-lsp][rnix-lsp]] for syntax checking.
+#+begin_src emacs-lisp
+  (with-eval-after-load 'lsp-mode
+    (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+    (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection "rnix-lsp")
+		      :major-modes '(nix-mode)
+		      :server-id 'nix)))
+#+end_src
+
+*** ESS
+    Enable [[https://ess.r-project.org][Emacs Speaks Statistics]] for awesome statistical aids that
+    i'll never use again.
+ #+begin_src emacs-lisp
+   (use-package ess
+     :init
+     (require 'ess-site)
+     :commands R
+     :mode "\\.Rout\\'")
+ #+end_src
+
+*** Haskell
+    Add completion support for Haskell through the [[https://github.com/horellana/company-ghci][company-ghci]]
+    [[*Company][Company]] backend.
+#+begin_src emacs-lisp
+  (use-package company-ghci
+    :after company
+    :config
+    (add-to-list 'company-backends 'company-ghci))
+#+end_src
+
+*** json-mode
+    [[https://github.com/joshwnj/json-mode][json-mode]] gives better syntax highlighting and additional editing
+    keybindings, extending the builtin major mode.
+ #+begin_src emacs-lisp
+   (use-package json-mode
+     :ensure t
+     :mode (("\\.json\\'" . json-mode)
+ #+end_src
+
+**** JSON-LD
+     Add JSON-LD to the list of files to be opened in json-mode.
+ #+begin_src emacs-lisp
+     ("\\.jsonld\\'" . json-mode)))
+ #+end_src
+
+*** Treemacs
+    [[https://github.com/Alexander-Miller/treemacs][Repo]]
+ #+begin_src emacs-lisp
+   (use-package treemacs
+ #+end_src
+
+**** Keybinds
+ #+begin_src emacs-lisp
+     :bind 
+     ("C-c t" . treemacs))
+ #+end_src
+
+**** Integrations
+***** Evil
+ #+begin_src emacs-lisp
+   (use-package treemacs-evil
+     :after (treemacs evil))
+ #+end_src
+
+***** Projectile
+ #+begin_src emacs-lisp
+   (use-package treemacs-projectile
+     :after (treemacs projectile))
+ #+end_src
+
+*** Projectile
+    Enable [[https://projectile.mx/][Projectile]] for managing any programming project directory.
+ #+begin_src emacs-lisp
+   (use-package projectile
+     :hook (prog-mode . projectile-mode)
+ #+end_src
+
+**** Manual delighting
+     Instead of the extended =Projectile[<project name>]= indicator,
+     use a much smaller =Prj[<project name>]=.
+#+begin_src emacs-lisp
+     :custom
+     (projectile-mode-line-prefix "Prj")
+#+end_src
+
+***** Why no "automatic" delighting?
+      According to some sources online, the same effect could be
+      achieved via [[*Delight][Delight]] by providing a replacement string
+      dynamically generated by using [[help:projectile-project-name][projectile-project-name]].
+
+      At the end of [[https://docs.projectile.mx/projectile/2.2/configuration.html#mode-line-indicator][this doc page]], though, it is said that Projectile
+      will not look for the project name when editing remote files. By
+      using that function directly, we always force the project name
+      lookup.
+
+      Since I am a heavy TRAMP user, this led to an unusable Emacs.
+
+**** Switch project to root
+     When switching to a project, open its root directory in Dired.
+#+begin_src emacs-lisp :tangle yes
+     (projectile-switch-project-action #'projectile-dired)
+#+end_src
+
+**** Keymap
+     Use =C-c p= as prefix for all [[https://docs.projectile.mx/projectile/usage.html#interactive-commands][commands]].
+#+begin_src emacs-lisp
+     :bind
+     (:map projectile-mode-map
+           ("C-c p" . projectile-command-map)))
+#+end_src
+
+*** Scala
+    Use [[https://github.com/hvesalai/emacs-scala-mode][scala-mode]] for basic language support.
+#+begin_src emacs-lisp
+  (use-package scala-mode
+    :interpreter
+    ("scala" . scala-mode))
+#+end_src
+
+**** SBT
+     Interface with the [[https://www.scala-sbt.org/][SBT]] interactive Scala build tool through
+     [[https://github.com/hvesalai/emacs-sbt-mode][sbt-mode]], allowing for SBT commands to be run from inside Emacs.
+#+begin_src emacs-lisp
+  (use-package sbt-mode
+    :after scala-mode
+    :commands sbt-start sbt-command
+    :config
+    ;; WORKAROUND: allows using SPACE when in the minibuffer
+    (substitute-key-definition
+     'minibuffer-complete-word
+     'self-insert-command
+     minibuffer-local-completion-map)
+    ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+    (setq sbt:program-options '("-Dsbt.supershell=false")))
+#+end_src
+
+*** ttl-mode
+    Syntax highlighting and electric indent for Turtle files.
+#+begin_src emacs-lisp
+  (use-package ttl-mode
+    :load-path "manual-packages/ttl-mode/"
+    :mode "\\.\\(n3\\|ttl\\|trig\\)\\'"
+    :config
+    (add-hook 'ttl-mode-hook 'turn-on-font-lock))
+#+end_src
+
+** Writing and publishing
+   What follow are packages centered around writing documents. Among
+   other things, here are the packages for managing bibliographies for
+   technical publications.
+
+*** AUCTeX
+    [[https://www.gnu.org/software/auctex/][GNU documentation]]
+#+begin_src emacs-lisp
+  (use-package tex
+    :ensure auctex
+    :custom
+#+end_src
+**** Style autosave and parsing 
+     I don't really get this, but somehow it should be here.
+#+begin_src emacs-lisp
+    (TeX-auto-save t)
+    (TeX-parse-self t)
+#+end_src
+**** auto-fill mode
+     Enable auto-fill-mode in TeX buffers, so that the resulting
+     document looks cleaner.
+ #+begin_src emacs-lisp
+    :config
+    (add-hook 'TeX-mode-hook 'auto-fill-mode))
+ #+end_src
+
+**** Company integration
+     Load the autocompletion machinery for editing TeX documents.
+
+***** Generic autocompletion
+      [[https://github.com/alexeyr/company-auctex/][Company-AUCTeX]], a Company backend for AUCTeX.
+#+begin_src emacs-lisp
+  (use-package company-auctex
+    :after (tex company)
+    :config
+    (company-auctex-init)
+#+end_src
+      Load backends for macros and environments.
+#+begin_src emacs-lisp
+    (append '((company-auctex-macros company-auctex-environments))
+            company-backends))
+#+end_src
+
+***** References
+      [[https://github.com/TheBB/company-reftex][company-reftex]] provides completion services for labels and
+      citations.
+#+begin_src emacs-lisp
+  (use-package company-reftex
+    :after (tex reftex company)
+    :config
+    (add-to-list 'company-backends 'company-reftex-labels)
+    (add-to-list 'company-backends 'company-reftex-citations))
+#+end_src
+
+***** Math symbols
+      Use [[https://github.com/vspinu/company-math][company-math]] for mathematical symbols and other Unicode
+      characters suggestion to show up as completion suggestions.
+#+begin_src emacs-lisp
+  (use-package company-math
+    :after (tex company)
+    :config
+    (append '((company-math-symbols-unicode company-math-symbols-latex))
+            company-backends))
+#+end_src
+ 
+*** org-ref
+    [[https://github.com/jkitchin/org-ref][Github page]]
+#+begin_src emacs-lisp
+  (use-package org-ref
+    :after (org reftex helm-bibtex)
+    :custom
+#+end_src
+
+**** Directory settings
+     Set the directories for org-ref:
+     - the notes file
+     - the location of the default bib database
+     - the PDF directory containing the retrieved documents
+#+begin_src emacs-lisp
+    (org-ref-bibliography-notes "~/org/bibliography/notes.org")
+    (org-ref-default-bibliography '("~/org/bibliography/references.bib"))
+    (org-ref-pdf-directory "~/org/bibliography/pdfs/")
+#+end_src
+
+**** Reftex
+     Set default bibliography for RefTeX to the bibliography used by
+     org-ref.
+#+begin_src emacs-lisp
+    (reftex-default-bibliography "~/org/bibliography/references.bib")
+#+end_src
+
+**** helm-bibtex integration
+     Use the advanced menu of [[*helm-bibtex][helm-bibtex]] with the org-ref bibliography.
+#+begin_src emacs-lisp
+    (bibtex-completion-bibliography "~/org/bibliography/references.bib")
+    (bibtex-completion-library-path "~/org/bibliography/pdfs")
+    (bibtex-completion-notes-path "~/org/bibliography/helm-bibtex-notes")
+#+end_src
+     And use the Org machinery to open PDF files with the correct viewer.
+#+begin_src emacs-lisp
+    (bibtex-completion-pdf-open-function 'org-open-file)
+#+end_src
+
+**** doi-utils
+     Allow for retrieval of bibliography info and PDFs via DOIs.
+#+begin_src emacs-lisp
+    :config
+    (require 'doi-utils)
+#+end_src
+
+**** org-ref-arxiv
+     Add entries from [[http://arxiv.org][arxiv.org]] links.
+#+begin_src emacs-lisp
+    (require 'org-ref-arxiv)
+#+end_src
+
+**** org-ref-sci-id
+     Define new link schemes for [[http://www.orcid.org][ORCID]] and [[https://www.researcherid.com][ResearcherID]] URIs.
+#+begin_src emacs-lisp
+  (require 'org-ref-sci-id))
+#+end_src
+
+*** helm-bibtex
+    [[https://github.com/tmalsburg/helm-bibtex][Repo]]
+
+    Use [[*Helm][Helm]] as the completion frontend for bibliography.
+#+begin_src emacs-lisp
+  (use-package helm-bibtex :after helm)
+#+end_src
+
+*** Roam
+    [[https://www.orgroam.com/manual.html][Manual]]
+
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :after org
+#+end_src
+    Load org-roam right after initialization, making it globally
+    available in any buffer.
+#+begin_src emacs-lisp
+    :hook
+    (after-init . org-roam-mode)
+#+end_src
+
+**** Roam directory
+     All Roam notes will be stored under =org/roam=.
+#+begin_src emacs-lisp
+     :custom
+     (org-roam-directory "~/org/roam")
+#+end_src
+
+**** Key mappings
+     - =C-c o= to enter the interactive selection/creation of a new
+       Roam note to write.
+     - =C-c i= to insert a Roam link at point with interactive
+       selection.
+#+begin_src emacs-lisp
+  :bind (("C-c o" . org-roam-find-file)
+         ("C-c i" . org-roam-insert)))
+#+end_src
+
+* Emacs options
+  What follow are all the configuration options for core
+  Emacs. Anything that is not package-related is configured here.
+
+** Editing
+   Settings contained in this section are concerned with basic text
+   editing facilities, like how to interpret tabs, when to display
+   line numbers, etc.
+
+*** Tabs
+    Always insert spaces instead of tabs.
+#+begin_src emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+end_src
+   Set tab width to be equivalent to 4 spaces.
+#+begin_src emacs-lisp
+  (setq c-basic-offset 4)
+  (setq tab-width 4)
+#+end_src
+
+*** Parentheses
+    Always show matching parentheses
+#+begin_src emacs-lisp
+  (show-paren-mode 1)
+#+end_src
+
+*** Line numbers
+    Display line numbers every time Emacs drops into a programming
+    major mode.
+#+begin_src emacs-lisp
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+#+end_src
+
+** Enable disabled functionalities
+   This section contains directives that explicitly enable some
+   commands that come disabled with stock Emacs installations.
+   - Uppercase region
+#+begin_src emacs-lisp
+  (put 'upcase-region 'disabled nil)
+  (put 'downcase-region 'disabled nil)
+#+end_src
+
+** EasyPG
+   Set pinentry mode to "loopback", so that the passphrase is read
+   from the minibuffer.
+#+begin_src emacs-lisp
+  (setq epg-pinentry-mode 'loopback)
+#+end_src
+
+** Dired
+   Allow dired to change permission bits whenever possible.
+#+begin_src emacs-lisp
+  (setq wdired-allow-to-change-permissions t)
+#+end_src
+
+** Built-in language support
+
+*** C
+    Enable folding of 'ifdefs' and code blocks.
+#+begin_src emacs-lisp
+  (add-hook 'c-mode-hook 'hide-ifdef-mode)
+  (add-hook 'c-mode-hook 'hs-minor-mode)
+#+end_src
+
+*** Python
+    Set the default Python interpreter to be Python 3. Because noone
+    wants to be legacy.
+#+begin_src emacs-lisp
+  (setq python-shell-interpreter "python3")
+#+end_src
+
+** Backups
+   These settings control how Emacs handles backup files: when to
+   create them, where to store them and when to delete them.
+*** Backup strategy
+    Tell Emacs to perform backups by copying files.
+#+begin_src emacs-lisp
+  (setq backup-by-copying t)
+#+end_src
+    Store version information in the filenames.
+#+begin_src emacs-lisp
+  (setq version-control t)
+#+end_src
+    And make backups of even version-controlled files.
+#+begin_src emacs-lisp
+  (setq vc-make-backup-files t)
+#+end_src
+
+*** Cleanup policy
+    Tell Emacs to:
+    - keep the two newest revisions of all files;
+    - keep the two oldest revisions of all files;
+    - silently delete any other revision.
+#+begin_src emacs-lisp
+  (setq delete-old-versions t
+        kept-new-versions 2
+        kept-old-versions 2
+   )
+#+end_src
+
+*** Destination of backup files
+    Make Emacs accumulate all backups under a central directory.
+#+begin_src emacs-lisp
+  (setq backup-directory-alist
+        `(("." . ,(concat user-emacs-directory
+                          (convert-standard-filename "backups/"))))
+   )
+#+end_src
+
+*** Safeguards
+    Force Emacs to make a backup every time a file is saved. The
+    backed-up content is the one being overwritten.
+#+begin_src emacs-lisp
+  (defun force-buffer-backup ()
+    (setq buffer-backed-up nil)
+   )
+  (add-hook 'before-save-hook 'force-buffer-backup)
+#+end_src
+
+** Org
+   Everything Org.
+
+*** General settings
+**** File associations
+     Make Org archive files also explorable via Org.
+#+begin_src emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.org_archive\\'" . org-mode))
+#+end_src
+
+**** Invisibe edits
+     Whenever an edit is made to an hidden part of an Org file:
+     - insert text only in parts before visible text
+     - delete only visibe text
+     - show the edited point
+#+begin_src emacs-lisp
+  (setq org-catch-invisible-edits 'smart)
+#+end_src
+
+**** Line splitting policy
+     When pressing =M-RET=, by default it splits the current line and
+     creates a new headline/entry with the rest. I want to disable
+     this behaviour specifically for headlines.
+#+begin_src emacs-lisp
+  (setq org-M-RET-may-split-line
+        '((headline . nil)
+          (default . t)))
+#+end_src
+
+*** Key binds
+**** org-capture
+     Bind =C-c r= to quickly capture stuff.
+#+begin_src emacs-lisp
+  (define-key global-map "\C-cr" 'org-capture)
+#+end_src
+
+**** Agenda
+     Quick access to the agenda via =C-c a=.
+#+begin_src emacs-lisp
+  (define-key global-map "\C-ca" 'org-agenda)
+#+end_src
+
+**** Capturing links
+     Press =C-c l= anywhere to store an Org link pointing to the
+     nearest anchor point.
+#+begin_src emacs-lisp
+  ;; Quick link capture
+  (define-key global-map "\C-cl" 'org-store-link)
+#+end_src
+
+**** Minor modes for Org buffers
+     Activate auto-filling in all Org buffers.
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'auto-fill-mode)
+#+end_src
+
+** TRAMP
+
+*** ControlMaster
+    Keep a persistent connection to the remote host open for at least
+    600s.
+#+begin_src emacs-lisp
+  (setq tramp-ssh-controlmaster-options
+        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=600")
+#+end_src
+
