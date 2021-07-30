@@ -1015,16 +1015,16 @@
 #+end_src
     Load org-roam right after initialization, making it globally
     available in any buffer.
-    :hook
-    (after-init . org-roam-mode)
 #+begin_src emacs-lisp :tangle yes
+  :hook
+  (after-init . org-roam-setup)
 #+end_src
 
 **** Roam directory
      All Roam notes will be stored under =org/roam=.
-     :custom
-     (org-roam-directory "~/org/roam")
 #+begin_src emacs-lisp :tangle yes
+  :custom
+  (org-roam-directory "~/org/roam")
 #+end_src
 
 **** Key mappings
@@ -1032,10 +1032,55 @@
        Roam note to write.
      - =C-c i= to insert a Roam link at point with interactive
        selection.
-  :bind (("C-c o" . org-roam-find-file)
-         ("C-c i" . org-roam-insert)))
+     - =C-c m= to toggle the Roam backlinks buffer.
 #+begin_src emacs-lisp :tangle yes
+  :bind (("C-c o" . org-roam-node-find)
+         ("C-c i" . org-roam-node-insert)
+         ("C-c m" . org-roam-buffer-toggle))
 #+end_src
+
+**** Roam protocol
+     Load and enable the [[https://www.orgroam.com/manual.html#Roam-Protocol][Roam protocols]].
+#+begin_src emacs-lisp :tangle yes
+  :config
+  (require 'org-roam-protocol)
+#+end_src
+
+**** Templates
+     Append the following custom capture templates.
+
+     For some reason, the temporary buffer thing doesn't work.
+#+begin_src emacs-lisp :tangle yes
+  ;;  :config
+  ;;  (push
+  ;;   '("p" "paper" plain #'org-roam-capture--get-point "%?"
+  ;;     :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}
+  ;;#+roam_refs: %(with-temp-buffer (org-ref-insert-link nil) (buffer-string))
+  ;;#+filetags: paper
+  ;;")
+  ;;   :unnarrowed t)
+  ;;   org-roam-capture-templates)
+  )
+#+end_src
+
+**** v2 post-migration successful flag
+     Signal Roam that the migration from v1 to v2 was successful.
+     #+begin_src emacs-lisp :tangle yes
+       (setq org-roam-v2-ack t)
+     #+end_src
+
+*** Org Roam BibTeX
+    [[https://github.com/org-roam/org-roam-bibtex/blob/master/doc/orb-manual.org][Manual]]
+
+    Take notes about papers and store them into the hyperlinked Roam stash.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package org-roam-bibtex
+        :ensure t
+        :after (org-roam org-ref)
+        :delight org-roam-bibtex-mode
+        :config
+        (org-roam-bibtex-mode))
+    #+end_src
 
 * Emacs options
   What follow are all the configuration options for core
