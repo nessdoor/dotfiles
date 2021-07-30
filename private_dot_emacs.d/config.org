@@ -1302,6 +1302,81 @@
   (add-hook 'org-mode-hook 'auto-fill-mode)
 #+end_src
 
+** Shells
+
+*** Show working dir when launching commands
+    When launching commands via =M-!= or =M-&=, the CWD is not
+    displayed. Since I often launch the command in the wrong
+    directory:
+#+begin_src emacs-lisp :tangle yes
+  (setq shell-command-prompt-show-cwd t)
+#+end_src
+
+*** Don't throw away command output
+    If output-producing command are launched in succession, let their
+    outputs pile up.
+#+begin_src emacs-lisp :tangle yes
+  (setq shell-command-dont-erase-buffer 'end-last-out)
+#+end_src
+
+*** Dirtrack
+    Use the Directory Tracking mode for sticking to the correct
+    working directory. Scripts might change it under our nose.
+#+begin_src emacs-lisp :tangle yes
+  (setq dirtrack-list '("^[^: ]*[: ]\\([^]$%#>]+\\)[]$%#>]" 1))
+  (add-hook 'shell-mode-hook
+            (lambda ()
+              (shell-dirtrack-mode 0)
+              (dirtrack-mode)))
+#+end_src
+
+*** Read-only output
+    (Taken from [[https://snarfed.org/why_i_run_shells_inside_emacs][this article]])
+
+    Once printed, I don't think I have a need to modify the output of
+    a commmand. To protect from accidental modifications, put the
+    ~read-only~ [[info:elisp#Special Properties][special property]] on it.
+#+begin_src emacs-lisp :tangle yes
+  (add-hook 'comint-output-filter-functions
+            (lambda (text)
+              (let ((inhibit-read-only t)
+                    (output-end (process-mark (get-buffer-process (current-buffer)))))
+                (put-text-property comint-last-output-start output-end 'read-only t))))
+#+end_src
+
+*** Scrolling
+    On input, scroll to bottom, but only in the window where text is
+    actually being inserted. Allow other windows pointing to the same
+    buffer to keep their position (useful for holding in view old
+    outputs while launching new commands).
+#+begin_src emacs-lisp :tangle yes
+  (setq comint-scroll-to-bottom-on-input 'this)
+#+end_src
+
+*** No duplicates in history
+    Don't accumulate successive identical commands on the input ring.
+#+begin_src emacs-lisp :tangle yes
+  (setq comint-input-ignoredups t)
+#+end_src
+
+*** Buffer truncation
+    Truncate buffer to [[help:comint-buffer-maximum-size][comint-buffer-maximum-size]].
+#+begin_src emacs-lisp :tangle yes
+  (add-to-list 'comint-output-filter-functions 'comint-truncate-buffer)
+#+end_src
+
+*** Autocompletion slowdown on remote shells
+    Apparently, [[*Company][Company]] makes things slow inside remote shells (it
+    launches a costly PATH search for every verb completion
+    opportunity). Disable it in this specific case.
+#+begin_src emacs-lisp :tangle yes
+  (add-hook 'shell-mode-hook
+            (lambda ()
+              (when (and (fboundp 'company-mode)
+                         (file-remote-p default-directory))
+                (company-mode -1))))
+#+end_src
+
 ** TRAMP
 
 *** Default method
