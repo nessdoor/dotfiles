@@ -1140,7 +1140,16 @@
 #+end_src
 
 ** Dired
-   Allow dired to change permission bits whenever possible.
+
+*** Auto revert
+    Automatically revert Dired buffers if directory changes have been
+    detected.
+    #+begin_src emacs-lisp :tangle yes
+      (setq dired-auto-revert-buffer 'dired-directory-changed-p)
+    #+end_src
+
+*** WDired
+    Allow Dired to change permission bits whenever possible.
 #+begin_src emacs-lisp :tangle yes
   (setq wdired-allow-to-change-permissions t)
 #+end_src
