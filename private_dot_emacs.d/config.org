@@ -1231,6 +1231,21 @@
   (add-hook 'before-save-hook 'force-buffer-backup)
 #+end_src
 
+** Auto-save
+   Decrease the frequency of auto-saves both in terms of input events
+   and time (I am frequently editing remotely on an unstable
+   connection).
+#+begin_src emacs-lisp :tangle yes
+  (setq auto-save-interval 500)
+  (setq auto-save-timeout 60)
+#+end_src
+
+** Auto-revert
+   Enable [[help:auto-revert-mode][auto-revert-mode]] on remote files.
+   #+begin_src emacs-lisp :tangle yes
+     (setq auto-revert-remote-files t)
+   #+end_src
+
 ** Org
    Everything Org.
 
@@ -1289,11 +1304,92 @@
 
 ** TRAMP
 
+*** Default method
+    Set SSH as the default connection method.
+#+begin_src emacs-lisp :tangle yes
+  (setq tramp-default-method "ssh")
+#+end_src
+
+*** Remote backups
+    Use the remote host for hosting backups, following the same policy
+    as for [[*Destination of backup files][local backups]].
+#+begin_src emacs-lisp :tangle yes
+  (setq tramp-backup-directory-alist backup-directory-alist)
+#+end_src
+
+**** Issues with cp
+    Be aware that this functionality relies on ~cp -p~ being supported
+    by the remote environment. This is not always true, especially for
+    NFS mounts.
+
+    The following worked as a stopgap measure.
+#+begin_example
+  #!/bin/bash
+
+  allowed_args=()
+
+  while [[ $# -gt 0 ]]
+  do
+      case "$1" in
+          -p)
+              # Void `-p`, hoping that nothing will break because of
+              # permissions
+              shift
+              ;;
+          ,*)
+              allowed_args+=("$1")
+              shift
+              ;;
+      esac
+  done
+
+  exec /usr/bin/cp ${allowed_args[@]}
+#+end_example
+
+*** dir-locals
+    Enable remote directory-local variables.
+#+begin_src emacs-lisp :tangle yes
+  (setq enable-remote-dir-locals t)
+#+end_src
+
 *** ControlMaster
     Keep a persistent connection to the remote host open for at least
     600s.
 #+begin_src emacs-lisp :tangle yes
   (setq tramp-ssh-controlmaster-options
         "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=600")
+#+end_src
+
+*** File caching
+    Cache more aggressively (10 minutes).
+#+begin_src emacs-lisp :tangle yes
+  (setq remote-file-name-inhibit-cache 600)
+#+end_src
+
+*** Language environment
+    Since many of the regexps can only deal with English, force
+    English as a language in the environment.
+#+begin_src emacs-lisp :tangle yes
+  (add-to-list 'tramp-remote-process-environment "LANG=en_US.UTF-8")
+#+end_src
+
+*** Connection-local variables
+    Here connections profiles are defined. Host associations are a
+    private matter, so they are loaded from a separate file.
+
+**** Profile definitions
+
+***** local-bin
+      Include ~/.local/bin in PATH
+#+begin_src emacs-lisp :tangle yes
+  (connection-local-set-profile-variables
+   'local-bin
+   `((tramp-remote-path . ("~/.local/bin" . ,tramp-remote-path))))
+#+end_src
+
+**** Profile associations
+#+begin_src emacs-lisp :tangle yes
+  (setq conprof-file (expand-file-name "conprof-assoc.el" user-emacs-directory))
+  (load conprof-file)
 #+end_src
 
