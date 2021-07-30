@@ -1160,6 +1160,13 @@
      (global-set-key (kbd "C-x C-b") 'ibuffer)
    #+end_src
 
+** Mouse support
+   Since I mainly use Emacs from inside graphical terminal emulators,
+   enable XTerm mouse interaction mode.
+   #+begin_src emacs-lisp :tangle yes
+     (xterm-mouse-mode 1)
+   #+end_src
+
 ** Built-in language support
 
 *** C
