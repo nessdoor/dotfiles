@@ -747,6 +747,13 @@
      ("\\.jsonld\\'" . json-mode)))
  #+end_src
 
+*** csv-mode
+    For consistently editing CSV files.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package csv-mode
+        :ensure t)
+    #+end_src
+
 *** Treemacs
     [[https://github.com/Alexander-Miller/treemacs][Repo]]
  #+begin_src emacs-lisp :tangle yes
