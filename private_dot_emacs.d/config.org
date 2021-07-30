@@ -230,10 +230,38 @@
      Make autocompletion more responsive by both shortening the minimum prefix
      used for picking completions, and diminishing the delay between last
      keypress and completion popup appearance.
-    :custom
-    (company-minimum-prefix-length 1)
-    (company-idle-delay 0.1)
 #+begin_src emacs-lisp :tangle yes
+  :custom
+  (company-minimum-prefix-length 1)
+  (company-idle-delay 0.0)
+#+end_src
+
+**** Selection wrapping and quick access numbers
+     Wrap around when going through the candidates list.
+#+begin_src emacs-lisp :tangle yes
+  (company-selection-wrap-around t)
+#+end_src
+     Show quick access numbers on the completion list.
+#+begin_src emacs-lisp :tangle yes
+  (company-show-numbers t)
+#+end_src
+
+**** Disable completion enforcement
+     In certain modes, completion is mandated, i.e. a character not
+     belonging to any completion cannot be entered. Disable this mode,
+     since it's rather annoying.
+#+begin_src emacs-lisp :tangle yes
+  (company-require-match nil)
+#+end_src
+
+**** Autocommit                                                    :DISABLED:
+     Autocommit the first completion candidate upon pressing certain
+     semantically significative keys: closing parentheses, punctuation
+     and string quotes. Plus, don't do it for spaces (as per default,
+     while usually is use it to escape from autocompletion).
+#+begin_src emacs-lisp :tangle no
+  (company-auto-commit nil)
+  (company-auto-commit-chars '(41 46 34))
 #+end_src
 
 **** Pesky downcasing
@@ -246,8 +274,15 @@
      'keep-prefix'. With this set, the topmost completion candidates
      could have a different casing than desired, leading to some
      annoying additional editing.
-  (company-dabbrev-ignore-case nil))
 #+begin_src emacs-lisp :tangle yes
+  (company-dabbrev-ignore-case nil)
+#+end_src
+
+**** Remove company-clang
+     Since we're programming with [[*LSP][LSP]], disable the Clang backend.
+#+begin_src emacs-lisp :tangle yes
+  :config
+  (delete 'company-clang company-backends))
 #+end_src
 
 *** YASnippet
@@ -260,6 +295,14 @@
     :after (yasnippet-snippets company)
     :config
     (yas-reload-all)
+#+end_src
+
+**** Move to another prefix
+     YAS uses the =C-c &= prefix for his things. Since this is already
+     used pretty well by [[help:org-mark-ring-goto][org-mark-ring-goto]], remap it to =C-c y=.
+#+begin_src emacs-lisp :tangle yes
+  (define-key yas-minor-mode-map (kbd "C-c y") (lookup-key yas-minor-mode-map (kbd "C-c &")))
+  (define-key yas-minor-mode-map (kbd "C-c &") nil)
 #+end_src
 
 **** company-yasnippet backend
@@ -291,9 +334,17 @@
 **** Hooking
      Hook the YASnippet minor mode to various modes where it can be
      useful.
-  :hook ((prog-mode org-mode) . yas-minor-mode))
 #+begin_src emacs-lisp :tangle yes
+  :hook ((prog-mode org-mode) . yas-minor-mode)
 #+end_src
+
+**** Forced expansion
+     Use =y= after the prefix to force a YASnippet expansion.
+     #+begin_src emacs-lisp :tangle yes
+       :bind
+       (:map yas-minor-mode-map
+             ("C-c y y" . yas-expand)))
+     #+end_src
 
 **** Premade snippets
      Make sure to have [[https://github.com/AndreaCrotti/yasnippet-snippets][Andrea Crotti's snippets]] around.
