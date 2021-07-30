@@ -1468,3 +1468,118 @@
   (load conprof-file)
 #+end_src
 
+** Gnus
+
+*** Hydras
+    Add the [[*Hydra][hydras]] suggested [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org][here]].
+
+**** Group buffer
+     Use =y= in the =*Group*= buffer to trigger this hydra.
+     #+begin_src emacs-lisp :tangle yes
+         (eval-after-load 'gnus-group
+           '(progn
+              (defhydra hydra-gnus-group (:color blue)
+                "
+         [_A_] Remote groups (A A) [_g_] Refresh
+         [_L_] Local groups        [_\\^_] List servers
+         [_c_] Mark all read       [_m_] Compose new mail
+         [_G_] Search mails (G G) [_#_] Mark mail
+         "
+                ("A" gnus-group-list-active)
+                ("L" gnus-group-list-all-groups)
+                ("c" gnus-topic-catchup-articles)
+                ("G" dianyou-group-make-nnir-group)
+                ("g" gnus-group-get-new-news)
+                ("^" gnus-group-enter-server-mode)
+                ("m" gnus-group-new-mail)
+                ("#" gnus-topic-mark-topic)
+                ("q" nil))
+              (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
+     #+end_src
+
+**** Summary buffer
+     Again, use =y= in a =*Summary*= buffer to trigger this hydra.
+     #+begin_src emacs-lisp :tangle yes
+           (eval-after-load 'gnus-sum
+             '(progn
+                (defhydra hydra-gnus-summary (:color blue)
+                  "
+           [_s_] Show thread   [_F_] Forward (C-c C-f)
+           [_h_] Hide thread   [_e_] Resend (S D e)
+           [_n_] Refresh (/ N) [_r_] Reply
+           [_!_] Mail -> disk  [_R_] Reply with original
+           [_d_] Disk -> mail  [_w_] Reply all (S w)
+           [_c_] Read all      [_W_] Reply all with original (S W)
+           [_#_] Mark          [_G_] Search mails
+           "
+                  ("s" gnus-summary-show-thread)
+                  ("h" gnus-summary-hide-thread)
+                  ("n" gnus-summary-insert-new-articles)
+                  ("F" gnus-summary-mail-forward)
+                  ("!" gnus-summary-tick-article-forward)
+                  ("d" gnus-summary-put-mark-as-read-next)
+                  ("c" gnus-summary-catchup-and-exit)
+                  ("e" gnus-summary-resend-message-edit)
+                  ("R" gnus-summary-reply-with-original)
+                  ("r" gnus-summary-reply)
+                  ("W" gnus-summary-wide-reply-with-original)
+                  ("w" gnus-summary-wide-reply)
+                  ("#" gnus-topic-mark-topic)
+                  ("G" dianyou-group-make-nnir-group)
+                  ("q" nil))
+                (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
+     #+end_src
+
+**** Article mode
+     Yet again, use =y= inside article buffers to trigger the hydra.
+     #+begin_src emacs-lisp :tangle yes
+             (eval-after-load 'gnus-art
+               '(progn
+                  (defhydra hydra-gnus-article (:color blue)
+                    "
+             [_o_] Save attachment        [_F_] Forward
+             [_v_] Play video/audio       [_r_] Reply
+             [_d_] CLI to download stream [_R_] Reply with original
+             [_b_] Open external browser  [_w_] Reply all (S w)
+             [_f_] Click link/button      [_W_] Reply all with original (S W)
+             [_g_] Focus link/button
+             "
+                    ("F" gnus-summary-mail-forward)
+                    ("r" gnus-article-reply)
+                    ("R" gnus-article-reply-with-original)
+                    ("w" gnus-article-wide-reply)
+                    ("W" gnus-article-wide-reply-with-original)
+                    ("o" gnus-mime-save-part)
+                    ("v" w3mext-open-with-mplayer)
+                    ("d" w3mext-download-rss-stream)
+                    ("b" w3mext-open-link-or-image-or-url)
+                    ("f" w3m-lnum-follow)
+                    ("g" w3m-lnum-goto)
+                    ("q" nil))
+                  (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body)))
+     #+end_src
+
+**** Message buffers
+     While writing a message, press =C-c C-y= to trigger this
+     hydra. The hydra is dynamically redefined for each message buffer
+     that is opened.
+     #+begin_src emacs-lisp :tangle yes
+             (eval-after-load 'message
+               '(progn
+                  (defhydra hydra-message (:color blue)
+               "
+             [_c_] Complete mail address
+             [_a_] Attach file
+             [_s_] Send mail (C-c C-c)
+             "
+                    ("c" counsel-bbdb-complete-mail)
+                    ("a" mml-attach-file)
+                    ("s" message-send-and-exit)
+                    ("i" dianyou-insert-email-address-from-received-mails)
+                    ("q" nil))))
+
+             (defun message-mode-hook-hydra-setup ()
+               (local-set-key (kbd "C-c C-y") 'hydra-message/body))
+             (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
+     #+end_src
+
