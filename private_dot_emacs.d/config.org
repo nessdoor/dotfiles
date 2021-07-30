@@ -567,6 +567,19 @@
     :commands lsp lsp-deferred
 #+end_src
 
+**** Performance settings
+     According to [[https://emacs-lsp.github.io/lsp-mode/page/performance/][official sources]] and the output of [[help:lsp-doctor][the doctor]], these
+     settings make LSP performance decent.
+
+     - Increase GC threshold to 100MB
+     - Increase the maximum amount of read data from a remote process
+       to 1MiB
+#+begin_src emacs-lisp :tangle yes
+  :config
+  (setq gc-cons-threshold 100000000)
+  (setq read-process-output-max (* 1024 1024))
+#+end_src
+
 **** Mode hooks
      Here is the place to register which modes trigger the activation
      of LSP.
@@ -574,7 +587,12 @@
   :hook
   ((c-mode . lsp-deferred)
    (python-mode . lsp-deferred)
-   (scala-mode . lsp-deferred)))
+   (scala-mode . lsp-deferred)
+#+end_src
+
+     Also activate code lenses when in an LSP-serviced buffer.
+#+begin_src emacs-lisp :tangle yes
+  (lsp-mode . lsp-lens-mode)))
 #+end_src
 
 **** Extras
@@ -585,7 +603,20 @@
 #+begin_src emacs-lisp :tangle yes
   (use-package lsp-ui
     :after lsp-mode
-    :commands lsp-ui-mode)
+    :commands lsp-ui-mode
+#+end_src
+
+****** Sideline
+       Show the hover on the sideline.
+#+begin_src emacs-lisp :tangle yes
+  :config
+  (setq lsp-ui-sideline-show-hover t)
+#+end_src
+
+****** Imenu
+       Autorefresh Imenu.
+#+begin_src emacs-lisp :tangle yes
+  (setq lsp-ui-imenu-auto-refresh t))
 #+end_src
 
 **** Integrations
@@ -672,6 +703,13 @@
 		      :major-modes '(nix-mode)
 		      :server-id 'nix)))
 #+end_src
+
+***** Java
+      #+begin_src emacs-lisp :tangle yes
+        (use-package lsp-java
+          :after lsp-mode
+          :hook (java-mode . lsp))
+      #+end_src
 
 *** ESS
     Enable [[https://ess.r-project.org][Emacs Speaks Statistics]] for awesome statistical aids that
