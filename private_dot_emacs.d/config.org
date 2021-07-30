@@ -499,7 +499,15 @@
     [[https://www.emacswiki.org/emacs/DiredPlus][Wiki page]]
 #+begin_src emacs-lisp :tangle yes
   (use-package dired+
-    :load-path "manual-packages/dired+/")
+    :load-path "manual-packages/dired+/"
+#+end_src
+
+**** Unhide details
+     By default, Dired+ hides details in new Dired buffers. Since I
+     want to see everything, unset this variable:
+#+begin_src emacs-lisp :tangle yes
+  :custom
+  (diredp-hide-details-initially-flag nil))
 #+end_src
 
 *** Iedit
