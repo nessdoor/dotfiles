@@ -1154,6 +1154,12 @@
   (setq wdired-allow-to-change-permissions t)
 #+end_src
 
+** Ibuffer
+   Use [[help:ibuffer-mode][ibuffer-mode]] when listing currently open buffers.
+   #+begin_src emacs-lisp :tangle yes
+     (global-set-key (kbd "C-x C-b") 'ibuffer)
+   #+end_src
+
 ** Built-in language support
 
 *** C
