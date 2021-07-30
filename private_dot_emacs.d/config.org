@@ -1115,6 +1115,14 @@
   (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 #+end_src
 
+*** Fill and autofill
+
+**** Autofill in Text mode
+     When entering text mode, always enable autofilling.
+#+begin_src emacs-lisp :tangle yes
+  (add-hook 'text-mode-hook 'auto-fill-mode)
+#+end_src
+
 ** Enable disabled functionalities
    This section contains directives that explicitly enable some
    commands that come disabled with stock Emacs installations.
