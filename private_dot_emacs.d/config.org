@@ -863,6 +863,12 @@
   (use-package magit)
 #+end_src
 
+*** Cypher
+    Syntax highlighting for Cypher, the query language of Neo4j.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package cypher-mode)
+    #+end_src
+
 ** Writing and publishing
    What follow are packages centered around writing documents. Among
    other things, here are the packages for managing bibliographies for
