@@ -855,6 +855,14 @@
     (add-hook 'ttl-mode-hook 'turn-on-font-lock))
 #+end_src
 
+*** Magit
+    [[https://magit.vc/][Homepage]]
+    [[https://magit.vc/manual/magit.html][User manual]]
+    [[https://magit.vc/manual/magit-refcard.pdf][Reference card]]
+#+begin_src emacs-lisp :tangle yes
+  (use-package magit)
+#+end_src
+
 ** Writing and publishing
    What follow are packages centered around writing documents. Among
    other things, here are the packages for managing bibliographies for
