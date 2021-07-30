@@ -195,6 +195,15 @@
   (org-special-ctrl-a/e t))
 #+end_src
 
+*** Hydra
+    [[https://github.com/abo-abo/hydra][Repo]]
+
+    Augment keybindings with visible key guide and easy repetition.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package hydra
+        :ensure t)
+    #+end_src
+
 *** undo-tree
     Replace the stock undo system with [[https://github.com/apchamberlain/undo-tree.el][undo-tree]], allowing for forking
     undo/redo histories.
