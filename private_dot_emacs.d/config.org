@@ -80,6 +80,35 @@
     :config
     (evil-mode 1)
 #+end_src
+
+**** Initial states
+
+***** Motion
+      Motion state is useful to have for its HJKL motion keys without
+      shadowing special major mode keys.
+
+      Use the Motion state inside:
+      - XREF buffers
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'xref-mode 'motion)
+        #+end_src
+      - Tar buffers
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'tar-mode 'motion)
+        #+end_src
+      - Lsp session browser
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'lsp-browser-mode 'motion)
+        #+end_src
+
+***** Emacs state
+      For those modes were even HJKL motion is uncomfortable.
+
+      - [[info:woman#Top][WoMan]]
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'woman-mode 'emacs)
+        #+end_src
+
 **** Tree undo system
      Wire [[*undo-tree][undo-tree]] to the [[help:evil-undo][evil-undo]] function. This way, Evil undo
      results in and undo command on the tree, permitting forking
