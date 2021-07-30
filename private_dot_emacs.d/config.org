@@ -934,6 +934,12 @@
             company-backends))
 #+end_src
  
+*** AsciiDoc
+    Add support for writing AsciiDoc documentation.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package adoc-mode)
+    #+end_src
+
 *** org-ref
     [[https://github.com/jkitchin/org-ref][Github page]]
 #+begin_src emacs-lisp :tangle yes
