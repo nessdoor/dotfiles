@@ -547,6 +547,15 @@
      :mode "\\.nix\\'")
  #+end_src
 
+*** Bazel
+    [[https://github.com/bazelbuild/emacs-bazel-mode][Repo]]
+
+    Syntax, formatting and build support for Bazel projects.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package bazel
+        :load-path "manual-packages/emacs-bazel-mode")
+    #+end_src
+
 *** LSP
     [[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
    
