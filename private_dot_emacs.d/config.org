@@ -116,8 +116,15 @@
 
      For this, the relevant package and [[help:undo-tree-mode][undo-tree-mode]] needs to be
      enabled globally before Evil starts.
-  :after undo-tree)
 #+begin_src emacs-lisp :tangle yes
+  :after undo-tree
+#+end_src
+     In addition, the [[help:global-undo-tree-mode][global-undo-tree-mode]] is not effective inside
+     non-file buffers. Therefore we need to explicitly activate it
+     when the local Evil mode is activated.
+#+begin_src emacs-lisp :tangle yes
+  :config
+  (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode))
 #+end_src
 
 **** Evil extras
