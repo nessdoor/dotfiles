@@ -1,6 +1,7 @@
 -*- eval: (display-line-numbers-mode); -*-
 #+STARTUP: overview
 #+STARTUP: hidestars
+#+TAGS: TEMPORARY(t) BROKEN(b)
 
 * Package management
   Initialize the built-in package manager.
