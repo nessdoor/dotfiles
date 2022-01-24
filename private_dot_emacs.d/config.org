@@ -109,10 +109,6 @@
       shadowing special major mode keys.
 
       Use the Motion state inside:
-      - XREF buffers
-        #+begin_src emacs-lisp :tangle yes
-          (evil-set-initial-state 'xref-mode 'motion)
-        #+end_src
       - Tar buffers
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'tar-mode 'motion)
@@ -121,6 +117,14 @@
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'lsp-browser-mode 'motion)
         #+end_src
+      - IBuffer
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'ibuffer-mode 'motion)
+        #+end_src
+      - Flycheck errors list
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'flycheck-error-list-mode 'motion)
+        #+end_src
 
 ***** Emacs state
       For those modes were even HJKL motion is uncomfortable.
@@ -128,6 +132,10 @@
       - [[info:woman#Top][WoMan]]
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'woman-mode 'emacs)
+        #+end_src
+      - XREF buffers
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'xref--xref-buffer-mode 'emacs)
         #+end_src
 
 **** Tree undo system
