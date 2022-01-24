@@ -59,6 +59,26 @@
    The following packages bring general-purpouse enhancements to the
    entirety of Emacs.
 
+*** Native complete
+    [[https://github.com/CeleritasCelery/emacs-native-shell-complete][Repo]]
+
+    Enable Bash completions inside shell-mode buffers. Register an asynchronous
+    [[*Company][Company]] backend and shortens the list of active backends in shell mode.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package company-native-complete
+        :ensure t
+        :demand
+        :after company
+        :hook (shell-mode . (lambda nil
+                              (setq-local company-backends
+                                          ;; Only backends that might be relevant for a shell
+                                          '((company-files company-native-complete)
+                                             company-capf
+                                             company-dabbrev))))
+        :config
+        (native-complete-setup-bash))
+    #+end_src
+
 *** Delight
     Ensure that [[https://elpa.gnu.org/packages/delight.html][Delight]] is installed, since it will be used for hiding
     some modelines in ~use-package~ directives.
