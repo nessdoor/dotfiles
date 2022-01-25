@@ -1428,9 +1428,11 @@
 ** TRAMP
 
 *** Default method
-    Set SSH as the default connection method.
+    Set SCP as the default connection method, since the automatic
+    selection of inline vs external method for transferring files
+    fails if this is set to SSH.
 #+begin_src emacs-lisp :tangle yes
-  (setq tramp-default-method "ssh")
+  (setq tramp-default-method "scp")
 #+end_src
 
 *** Remote backups
