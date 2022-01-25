@@ -1187,6 +1187,17 @@
   (setq epg-pinentry-mode 'loopback)
 #+end_src
 
+** GUI
+   Although I mainly use the terminal mode (because (1) I want a semi-transparent
+   background with no hassle and (2) I like pseudo-GUIs), sometimes it is
+   convenient to use the GTK GUI.
+
+*** Hide toolbar
+    Takes too much space and I never use it.
+    #+begin_src emacs-lisp :tangle yes
+      (tool-bar-mode -1)
+    #+end_src
+
 ** Dired
 
 *** Auto revert
