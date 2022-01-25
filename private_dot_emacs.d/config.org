@@ -671,6 +671,8 @@
    (python-mode . lsp-deferred)
    (scala-mode . lsp-deferred)
    (nix-mode . lsp-deferred)
+   (haskell-mode . lsp-deferred)
+   (haskell-literate-mode . lsp-deferred)
 #+end_src
 
      Also activate code lenses when in an LSP-serviced buffer.
@@ -786,6 +788,13 @@
 		      :major-modes '(nix-mode)
 		      :server-id 'nix)))
 #+end_src
+
+***** Haskell
+      [[https://emacs-lsp.github.io/lsp-haskell/][Official instructions]]
+      #+begin_src emacs-lisp :tangle yes
+        (use-package lsp-haskell
+          :after lsp-mode)
+      #+end_src
 
 ***** Java
       #+begin_src emacs-lisp :tangle yes
