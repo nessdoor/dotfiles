@@ -803,6 +803,34 @@
           :hook (java-mode . lsp))
       #+end_src
 
+*** DAP
+    [[https://emacs-lsp.github.io/dap-mode/][Homepage]]
+
+    Enable support for connecting to [[https://microsoft.github.io/debug-adapter-protocol/][Debug Adapter Protocol]]-enabled backends.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package dap-mode
+        :config
+        (dap-auto-configure-mode)
+    #+end_src
+
+**** Language support
+
+***** Python
+      Python support depends on [[https://github.com/microsoft/debugpy/][debugpy]] being installed and [[file:elpa/dap-mode-20211117.1555/dap-python.el::;;; dap-python.el --- Debug Adapter Protocol mode for Python -*- lexical-binding: t; -*-][dap-python]] being
+      loaded.
+      #+begin_src emacs-lisp :tangle yes
+        (require 'dap-python)
+        (setq dap-python-debugger 'debugpy) ; Necessary until they default it
+      #+end_src
+
+**** Automatic hydra
+     Since dap-mode comes with an integrated command hydra, follow the official
+     recommendations and make it appear automatically when hitting a breakpoint.
+     #+begin_src emacs-lisp :tangle yes
+       (add-hook 'dap-stopped-hook
+                 (lambda (arg) (call-interactively #'dap-hydra))))
+     #+end_src
+
 *** ESS
     Enable [[https://ess.r-project.org][Emacs Speaks Statistics]] for awesome statistical aids that
     i'll never use again.
