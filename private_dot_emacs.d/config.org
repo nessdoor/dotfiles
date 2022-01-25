@@ -1,7 +1,7 @@
 -*- eval: (display-line-numbers-mode); -*-
 #+STARTUP: overview
 #+STARTUP: hidestars
-#+TAGS: TEMPORARY(t) BROKEN(b)
+#+TAGS: TEMPORARY(t) BROKEN(b) DISABLED(d)
 
 * Package management
   Initialize the built-in package manager.
@@ -751,10 +751,10 @@
      :mode "\\.Rout\\'")
  #+end_src
 
-*** Haskell
+*** Haskell                                                        :DISABLED:
     Add completion support for Haskell through the [[https://github.com/horellana/company-ghci][company-ghci]]
     [[*Company][Company]] backend.
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
   (use-package company-ghci
     :after company
     :config
@@ -896,6 +896,19 @@
     Syntax highlighting for Cypher, the query language of Neo4j.
     #+begin_src emacs-lisp :tangle yes
       (use-package cypher-mode)
+    #+end_src
+
+*** guess-style                                                    :DISABLED:
+    [[https://github.com/nschum/guess-style][Repo]]
+
+    Guess indentation style when explicitly invoked.
+    #+begin_src emacs-lisp :tangle no
+      (use-package guess-style
+        :load-path "manual-packages/guess-style/"
+        :commands
+        guess-style-set-variable
+        guess-style-guess-variable
+        guess-style-guess-all)
     #+end_src
 
 ** Writing and publishing
