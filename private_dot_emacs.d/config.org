@@ -1175,10 +1175,15 @@
    This section contains directives that explicitly enable some
    commands that come disabled with stock Emacs installations.
    - Uppercase region
-#+begin_src emacs-lisp :tangle yes
-  (put 'upcase-region 'disabled nil)
-  (put 'downcase-region 'disabled nil)
-#+end_src
+     #+begin_src emacs-lisp :tangle yes
+       (put 'upcase-region 'disabled nil)
+       (put 'downcase-region 'disabled nil)
+     #+end_src
+   - Narrowing
+     #+begin_src emacs-lisp :tangle yes
+       (put 'narrow-to-region 'disabled nil)
+       (put 'narrow-to-page 'disabled nil)
+     #+end_src
 
 ** EasyPG
    Set pinentry mode to "loopback", so that the passphrase is read
