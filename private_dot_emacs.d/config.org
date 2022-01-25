@@ -981,8 +981,15 @@
     :load-path "manual-packages/ttl-mode/"
     :mode "\\.\\(n3\\|ttl\\|trig\\)\\'"
     :config
-    (add-hook 'ttl-mode-hook 'turn-on-font-lock))
+    (add-hook 'ttl-mode-hook 'turn-on-font-lock)
 #+end_src
+
+**** Idle indent
+     For some reason, this mode has an annoying automatic indentation
+     functionality that fires after some idle time. Disable it.
+     #+begin_src emacs-lisp :tangle yes
+       :custom (ttl-indent-on-idle-timer nil))
+     #+end_src
 
 *** Magit
     [[https://magit.vc/][Homepage]]
