@@ -609,6 +609,26 @@
       (use-package cypher-mode)
     #+end_src
 
+*** Direnv
+    Make [[https://github.com/direnv/direnv][Direnv]] environments available to Emacs sub-processes via [[https://github.com/wbolster/emacs-direnv][emacs-direnv]].
+    #+begin_src emacs-lisp :tangle yes
+      (use-package direnv
+        :ensure t
+        :config
+        (direnv-mode)
+    #+end_src
+
+**** Non-file buffers
+     By default, [[help:direnv-mode][direnv-mode]] only updates the environment when focus is shifted
+     between file-backed buffers.
+
+     Make it trigger in some selected non-file buffers opened in particular
+     modes by setting [[help:direnv-non-file-modes][direnv-non-file-modes]].
+     #+begin_src emacs-lisp :tangle yes
+       (add-to-list 'direnv-non-file-modes 'shell-mode)
+       (add-to-list 'direnv-non-file-modes 'comint-mode))
+     #+end_src
+
 *** nix-mode
     [[https://github.com/NixOS/nix-mode][Repo]]
 
