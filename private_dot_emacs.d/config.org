@@ -567,14 +567,19 @@
    The packages that follow add various features to aid in program
    development.
 
-*** nix-mode
-    [[https://github.com/NixOS/nix-mode][Repo]]
+*** .vimrc
+    [[https://github.com/mcandre/vimrc-mode][vimrc-mode]]
 
-    Major mode for editing Nix expressions.
- #+begin_src emacs-lisp :tangle yes
-   (use-package nix-mode
-     :mode "\\.nix\\'")
- #+end_src
+    For when you really need to edit .vimrc files in Emacs
+    #+begin_src emacs-lisp :tangle yes
+      (use-package vimrc-mode)
+    #+end_src
+
+*** .gitignore
+    Small major mode for editing .gitignore files.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package gitignore-mode)
+    #+end_src
 
 *** Bazel
     [[https://github.com/bazelbuild/emacs-bazel-mode][Repo]]
@@ -590,6 +595,28 @@
     #+begin_src emacs-lisp :tangle no
       (add-to-list 'company-backends 'company-nixos-options)
     #+end_src
+
+*** csv-mode
+    For consistently editing CSV files.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package csv-mode
+        :ensure t)
+    #+end_src
+
+*** Cypher
+    Syntax highlighting for Cypher, the query language of Neo4j.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package cypher-mode)
+    #+end_src
+
+*** nix-mode
+    [[https://github.com/NixOS/nix-mode][Repo]]
+
+    Major mode for editing Nix expressions.
+ #+begin_src emacs-lisp :tangle yes
+   (use-package nix-mode
+     :mode "\\.nix\\'")
+ #+end_src
 
 *** LSP
     [[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
@@ -782,13 +809,6 @@
      ("\\.jsonld\\'" . json-mode)))
  #+end_src
 
-*** csv-mode
-    For consistently editing CSV files.
-    #+begin_src emacs-lisp :tangle yes
-      (use-package csv-mode
-        :ensure t)
-    #+end_src
-
 *** Treemacs
     [[https://github.com/Alexander-Miller/treemacs][Repo]]
  #+begin_src emacs-lisp :tangle yes
@@ -897,12 +917,6 @@
 #+begin_src emacs-lisp :tangle yes
   (use-package magit)
 #+end_src
-
-*** Cypher
-    Syntax highlighting for Cypher, the query language of Neo4j.
-    #+begin_src emacs-lisp :tangle yes
-      (use-package cypher-mode)
-    #+end_src
 
 *** guess-style                                                    :DISABLED:
     [[https://github.com/nschum/guess-style][Repo]]
