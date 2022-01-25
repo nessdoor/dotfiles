@@ -842,6 +842,22 @@
      :mode "\\.Rout\\'")
  #+end_src
 
+*** Graphviz
+    [[https://github.com/ppareit/graphviz-dot-mode][Repo]]
+
+    Add some support for editing dot files.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package graphviz-dot-mode
+        :ensure t
+        :config
+        (setq graphviz-dot-indent-width 4))
+    #+end_src
+
+*** Gnuplot
+    #+begin_src emacs-lisp :tangle yes
+      (use-package gnuplot)
+    #+end_src
+
 *** Haskell                                                        :DISABLED:
     Add completion support for Haskell through the [[https://github.com/horellana/company-ghci][company-ghci]]
     [[*Company][Company]] backend.
