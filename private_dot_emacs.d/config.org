@@ -585,6 +585,12 @@
         :load-path "manual-packages/emacs-bazel-mode")
     #+end_src
 
+*** company-nixos-options                                            :BROKEN:
+    It's broken for some reason.
+    #+begin_src emacs-lisp :tangle no
+      (add-to-list 'company-backends 'company-nixos-options)
+    #+end_src
+
 *** LSP
     [[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
    
