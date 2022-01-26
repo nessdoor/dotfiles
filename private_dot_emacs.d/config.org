@@ -1827,66 +1827,117 @@
 #+end_src
 
 ** Gnus
+   - [[https://www.emacswiki.org/emacs/GnusTutorial][Tutorial from the EmacsWiki]]
+   - [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org][Tutorial from redguardtoo]]
+
+   Since GNUS lives in a different subsystem, all of its runtime
+   configuration is done in =.gnus.el=, instead of here.
 
 *** Hydras
     Add the [[*Hydra][hydras]] suggested [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org][here]].
 
 **** Group buffer
-     Use =y= in the =*Group*= buffer to trigger this hydra.
      #+begin_src emacs-lisp :tangle yes
-         (eval-after-load 'gnus-group
-           '(progn
-              (defhydra hydra-gnus-group (:color blue)
-                "
-         [_A_] Remote groups (A A) [_g_] Refresh
-         [_L_] Local groups        [_\\^_] List servers
-         [_c_] Mark all read       [_m_] Compose new mail
-         [_G_] Search mails (G G) [_#_] Mark mail
-         "
-                ("A" gnus-group-list-active)
-                ("L" gnus-group-list-all-groups)
-                ("c" gnus-topic-catchup-articles)
-                ("G" dianyou-group-make-nnir-group)
-                ("g" gnus-group-get-new-news)
-                ("^" gnus-group-enter-server-mode)
-                ("m" gnus-group-new-mail)
-                ("#" gnus-topic-mark-topic)
-                ("q" nil))
-              (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
+       (eval-after-load 'gnus-group
+         '(progn
      #+end_src
 
+***** Topic management
+      Create an Hydra for topic management.
+      #+begin_src emacs-lisp :tangle yes
+           (defhydra hydra-gnus-group-topic (:color blue)
+             "
+[_n_] New topic    [_s_] Show topic (T s) [_m_] Move group to topic (T m)
+[_r_] Rename topic [_h_] Hide topic (T h) [_M_] Move topic
+[_d_] Delete topic
+"
+             ("n" gnus-topic-create-topic)
+             ("r" gnus-topic-rename)
+             ("d" gnus-topic-delete)
+             ("s" gnus-topic-show-topic)
+             ("h" gnus-topic-hide-topic)
+             ("m" gnus-topic-move-group)
+             ("M" gnus-topic-move))
+      #+end_src
+
+***** Top-level group hydra
+      Use =y= in the =*Group*= buffer to trigger this hydra.
+      #+begin_src emacs-lisp :tangle yes
+           (defhydra hydra-gnus-group (:color blue)
+             "
+[_A_] Remote groups (A A) [_g_] Refresh
+[_L_] Local groups        [_\\^_] List servers
+[_U_] (Un)subscribe       [_u_] Unsubscribe at point
+[_c_] Mark all read       [_m_] Compose new mail
+[_G_] Search mails (G G)  [_#_] Mark mail
+[_T_] Topics...
+"
+             ("A" gnus-group-list-active)
+             ("L" gnus-group-list-all-groups)
+             ("U" gnus-group-unsubscribe-group)
+             ("u" gnus-group-unsubscribe-current-group)
+             ("c" gnus-topic-catchup-articles)
+             ("G" dianyou-group-make-nnir-group)
+             ("g" gnus-group-get-new-news)
+             ("^" gnus-group-enter-server-mode)
+             ("m" gnus-group-new-mail)
+             ("#" gnus-topic-mark-topic)
+             ("T" hydra-gnus-group-topic/body)
+             ("q" nil))
+           (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
+      #+end_src
+
 **** Summary buffer
-     Again, use =y= in a =*Summary*= buffer to trigger this hydra.
      #+begin_src emacs-lisp :tangle yes
-           (eval-after-load 'gnus-sum
-             '(progn
-                (defhydra hydra-gnus-summary (:color blue)
-                  "
-           [_s_] Show thread   [_F_] Forward (C-c C-f)
-           [_h_] Hide thread   [_e_] Resend (S D e)
-           [_n_] Refresh (/ N) [_r_] Reply
-           [_!_] Mail -> disk  [_R_] Reply with original
-           [_d_] Disk -> mail  [_w_] Reply all (S w)
-           [_c_] Read all      [_W_] Reply all with original (S W)
-           [_#_] Mark          [_G_] Search mails
-           "
-                  ("s" gnus-summary-show-thread)
-                  ("h" gnus-summary-hide-thread)
-                  ("n" gnus-summary-insert-new-articles)
-                  ("F" gnus-summary-mail-forward)
-                  ("!" gnus-summary-tick-article-forward)
-                  ("d" gnus-summary-put-mark-as-read-next)
-                  ("c" gnus-summary-catchup-and-exit)
-                  ("e" gnus-summary-resend-message-edit)
-                  ("R" gnus-summary-reply-with-original)
-                  ("r" gnus-summary-reply)
-                  ("W" gnus-summary-wide-reply-with-original)
-                  ("w" gnus-summary-wide-reply)
-                  ("#" gnus-topic-mark-topic)
-                  ("G" dianyou-group-make-nnir-group)
-                  ("q" nil))
-                (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
+       (eval-after-load 'gnus-sum
+         '(progn
      #+end_src
+
+***** Message respooling
+      Define an hydra for message respooling:
+      #+begin_src emacs-lisp :tangle yes
+        (defhydra hydra-gnus-summary-respool (:color blue)
+          "
+[_q_] Query filter [_r_] Respool article [_t_] Query and trace
+"
+          ("q" gnus-summary-respool-query)
+          ("r" gnus-summary-respool-article)
+          ("t" gnus-summary-respool-trace)
+          ("c" nil "Cancel"))
+      #+end_src
+
+***** Top-level summary hydra
+      Again, use =y= in a =*Summary*= buffer to trigger the top-level hydra.
+      #+begin_src emacs-lisp :tangle yes
+        (defhydra hydra-gnus-summary (:color blue)
+          "
+[_s_] Show thread   [_F_] Forward (C-c C-f)             [_G_] Search mails
+[_h_] Hide thread   [_e_] Resend (S D e)                [_t_] Toggle headers
+[_n_] Refresh (/ N) [_r_] Reply
+[_!_] Mail -> disk  [_R_] Reply with original
+[_d_] Disk -> mail  [_w_] Reply all (S w)
+[_c_] Read all      [_W_] Reply all with original (S W)
+[_#_] Mark          [_B_] Respool...
+"
+          ("s" gnus-summary-show-thread)
+          ("h" gnus-summary-hide-thread)
+          ("n" gnus-summary-insert-new-articles)
+          ("F" gnus-summary-mail-forward)
+          ("!" gnus-summary-tick-article-forward)
+          ("d" gnus-summary-put-mark-as-read-next)
+          ("c" gnus-summary-catchup-and-exit)
+          ("e" gnus-summary-resend-message-edit)
+          ("R" gnus-summary-reply-with-original)
+          ("r" gnus-summary-reply)
+          ("W" gnus-summary-wide-reply-with-original)
+          ("w" gnus-summary-wide-reply)
+          ("B" hydra-gnus-summary-respool/body)
+          ("#" gnus-topic-mark-topic)
+          ("G" dianyou-group-make-nnir-group)
+          ("t" gnus-summary-toggle-header)
+          ("q" nil))
+        (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
+      #+end_src
 
 **** Article mode
      Yet again, use =y= inside article buffers to trigger the hydra.
@@ -1895,13 +1946,13 @@
                '(progn
                   (defhydra hydra-gnus-article (:color blue)
                     "
-             [_o_] Save attachment        [_F_] Forward
-             [_v_] Play video/audio       [_r_] Reply
-             [_d_] CLI to download stream [_R_] Reply with original
-             [_b_] Open external browser  [_w_] Reply all (S w)
-             [_f_] Click link/button      [_W_] Reply all with original (S W)
-             [_g_] Focus link/button
-             "
+[_o_] Save attachment        [_F_] Forward
+[_v_] Play video/audio       [_r_] Reply
+[_d_] CLI to download stream [_R_] Reply with original
+[_b_] Open external browser  [_w_] Reply all (S w)
+[_f_] Click link/button      [_W_] Reply all with original (S W)
+[_g_] Focus link/button
+"
                     ("F" gnus-summary-mail-forward)
                     ("r" gnus-article-reply)
                     ("R" gnus-article-reply-with-original)
@@ -1922,23 +1973,25 @@
      hydra. The hydra is dynamically redefined for each message buffer
      that is opened.
      #+begin_src emacs-lisp :tangle yes
-             (eval-after-load 'message
-               '(progn
-                  (defhydra hydra-message (:color blue)
-               "
-             [_c_] Complete mail address
-             [_a_] Attach file
-             [_s_] Send mail (C-c C-c)
-             "
-                    ("c" counsel-bbdb-complete-mail)
-                    ("a" mml-attach-file)
-                    ("s" message-send-and-exit)
-                    ("i" dianyou-insert-email-address-from-received-mails)
-                    ("q" nil))))
+              (eval-after-load 'message
+                '(progn
+                   (defhydra hydra-message (:color blue)
+                     "
+[_s_] Send mail (C-c C-c)    [_c_] Complete mail address
+[_d_] Save draft (C-c C-d)   [_f_] Attach file
+[_k_] Kill message (C-c C-k) [_r_] Encode region in ROT13
+"
+                     ("s" message-send-and-exit)
+                     ("d" message-dont-send)
+                     ("k" message-kill-buffer)
+                     ("c" counsel-bbdb-complete-mail)
+                     ("f" mml-attach-file)
+                     ("r" message-caesar-region)
+                     ("q" nil))))
 
-             (defun message-mode-hook-hydra-setup ()
-               (local-set-key (kbd "C-c C-y") 'hydra-message/body))
-             (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
+              (defun message-mode-hook-hydra-setup ()
+                (local-set-key (kbd "C-c C-y") 'hydra-message/body))
+              (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
      #+end_src
 
 ** Winner mode
