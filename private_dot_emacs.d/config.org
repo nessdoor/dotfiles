@@ -1226,6 +1226,70 @@
         (org-roam-bibtex-mode))
     #+end_src
 
+** Email support
+
+*** BBDB
+    - [[http://bbdb.sourceforge.net/bbdb.html][Online manual]]
+    - [[https://blog.petitepomme.net/post/28547901478/installing-and-configuring-bbdb-3][An helpful blog post about configuring BBDB3]]
+
+    Activate and make available BBDB inside the =mail= and Gnus interfaces.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package bbdb
+        :ensure t
+        :config
+        (bbdb-initialize 'mail 'message 'gnus)
+    #+end_src
+
+**** MUA integration
+     Enable auto-update functionalities with the =:/;= keys when
+     reading messages, so that we can edit and insert new records
+     on-the-fly.
+
+     This step is necessary because, according to the [[help:bbdb-mua-auto-update-init][info page]], this
+     funciton has been separated from ~bbdb-initialize~ as to allow
+     users to enable this functionality only in certain cases
+     (e.g. only for outgoing messages).
+     #+begin_src emacs-lisp :tangle yes
+         (bbdb-mua-auto-update-init 'mail 'message 'gnus)
+     #+end_src
+
+     By default, when you press the =:/;= keys without a prefix, a
+     simple search in the database is performed. Only when called with
+     a prefix do they prompt the user for record creation.
+
+     Let's change the default so that the display/edit functions
+     prompt for creation when records are not found. Plus, when called
+     with a prefix, try to update name and mail.
+     #+begin_src emacs-lisp :tangle yes
+       (setq bbdb-mua-update-interactive-p '(query . update))
+     #+end_src
+
+     Finally, make BBDB look at all addresses contained in a message.
+     #+begin_src emacs-lisp :tangle yes
+       (setq bbdb-message-all-addresses t)
+     #+end_src
+
+**** Popups
+     Make the popups smaller when opening and editing entries inside
+     the mail client.
+     #+begin_src emacs-lisp :tangle yes
+       (setq bbdb-pop-up-window-size 0.15)
+       (setq bbdb-mua-pop-up-window-size 0.15))
+     #+end_src
+
+**** Counsel integration
+     Install and enable the [[*Counsel][Counsel]] integration.
+     #+begin_src emacs-lisp :tangle yes
+       (use-package counsel-bbdb
+         :ensure t)
+     #+end_src
+
+*** dianyou
+    #+begin_src emacs-lisp :tangle yes
+      (use-package dianyou
+        :ensure t)
+    #+end_src
+
 * Emacs options
   What follow are all the configuration options for core
   Emacs. Anything that is not package-related is configured here.
