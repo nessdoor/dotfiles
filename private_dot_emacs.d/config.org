@@ -1941,3 +1941,9 @@
              (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
      #+end_src
 
+** Winner mode
+   Enable [[info:emacs#Window Convenience][winner-mode]] for windows layout undo/redo.
+   #+begin_src emacs-lisp :tangle yes
+     (winner-mode 1)
+   #+end_src
+
