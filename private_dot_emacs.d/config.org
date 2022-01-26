@@ -1564,6 +1564,73 @@
           (default . t)))
 #+end_src
 
+*** Babel
+    Enable evaluation of additional languages by loading the appropriate modules
+    (refer to the basic table in [[info:org#Languages][the Info page]] and the extended tables on the
+    [[https://orgmode.org/worg/org-contrib/babel/languages/index.html][website]]).
+    #+begin_src emacs-lisp :tangle yes
+      (org-babel-do-load-languages
+       'org-babel-load-languages
+    #+end_src
+    - Graphviz's Dot
+      #+begin_src emacs-lisp :tangle yes
+        '((dot . t)
+      #+end_src
+    - Emacs Lisp (default)
+      #+begin_src emacs-lisp :tangle yes
+          (emacs-lisp . t)
+      #+end_src
+    - GNU Octave
+      #+begin_src emacs-lisp :tangle yes
+          (octave . t)
+      #+end_src
+    - Gnuplot
+      #+begin_src emacs-lisp :tangle yes
+          (gnuplot . t)
+      #+end_src
+    - GNU Screen
+      #+begin_src emacs-lisp :tangle yes
+          (screen . t)
+      #+end_src
+    - LaTeX
+      #+begin_src emacs-lisp :tangle yes
+          (latex . t)
+      #+end_src
+    - Maxima
+      #+begin_src emacs-lisp :tangle yes
+          (maxima . t)
+      #+end_src
+    - Shell
+      #+begin_src emacs-lisp :tangle yes
+          (shell . t)))
+      #+end_src
+
+*** LaTeX
+
+**** Inline previews
+     Inside graphical clients, inline LaTeX can be previewed by delegating the
+     rendering to an external program that is able to convert markup into
+     images. By default, this program is ~dvipng~.
+
+     Instead, set it to ~ImageMagick~, since it's almost always present for
+     unrelated reasons.
+     #+begin_src emacs-lisp :tangle yes
+       (setq org-preview-latex-default-process 'imagemagick)
+     #+end_src
+
+     Also, do not pollute the disk with preview images. Store all of them under
+     a temporary directory under =/tmp=.
+     #+begin_src emacs-lisp :tangle yes
+       (setq org-preview-latex-image-directory "/tmp/ltximg/")
+     #+end_src
+
+*** Entities
+    By default, activate UTF8 entity rendering in all Org buffers (consult the
+    output of ~org-entities-help~ for a list of recognized entities).
+    #+begin_src emacs-lisp :tangle yes
+      (setq org-pretty-entities t)
+    #+end_src
+
 *** Key binds
 **** org-capture
      Bind =C-c r= to quickly capture stuff.
