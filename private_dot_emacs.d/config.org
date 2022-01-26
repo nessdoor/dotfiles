@@ -995,9 +995,10 @@
     [[https://magit.vc/][Homepage]]
     [[https://magit.vc/manual/magit.html][User manual]]
     [[https://magit.vc/manual/magit-refcard.pdf][Reference card]]
-#+begin_src emacs-lisp :tangle yes
-  (use-package magit)
-#+end_src
+    #+begin_src emacs-lisp :tangle yes
+      (use-package magit
+        :ensure t)
+    #+end_src
 
 *** guess-style                                                    :DISABLED:
     [[https://github.com/nschum/guess-style][Repo]]
