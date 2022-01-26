@@ -1290,6 +1290,71 @@
         :ensure t)
     #+end_src
 
+** Others
+
+*** Maxima
+    There is a little unfortunate situation regarding Maxima support in
+    Emacs. Currently, there are two =maxima.el= (and =maxima-font-lock.el=) in
+    the wild: one is distributed with Maxima, the [[https://gitlab.com/sasanidas/maxima/-/tree/master][other]] is maintained by a
+    certain [[https://sasanidas.gitlab.io/f-site/][Fermin Munoz]] and available on Melpa.
+
+    The module in Melpa is much more maintained and up to date, it seems, plus
+    has some nice integrations with modern Emacs tools. Therefore, I went for
+    that (due to how my OS works, I had to patch the build procedure of Maxima
+    so that those old modules don't end up in my =site-lisp=).
+
+**** The main package
+     #+begin_src emacs-lisp :tangle yes
+       (use-package maxima
+     #+end_src
+
+     Follow the configuration displayed on the README.
+     First, prime the hooks with the [[help:maxima-hook-function][maxima-hook-function]] and the
+     [[help:maxima-font-lock-setup][maxima-font-lock-setup]].
+     #+begin_src emacs-lisp :tangle yes
+       :init
+       (add-hook 'maxima-mode-hook #'maxima-hook-function)
+       (add-hook 'maxima-inferior-mode-hook #'maxima-hook-function)
+     #+end_src
+
+     Then, register the autoload for editing =.mac= files and for the
+     interpreter interaction windows.
+     #+begin_src emacs-lisp :tangle yes
+       :mode ("\\.mac\\'" . maxima-mode)
+       :interpreter ("maxima" . maxima-mode))
+     #+end_src
+
+**** Other support packages
+     Load the rest of the packages that come bundled with the Maxima CAS,
+     [[https://sites.google.com/site/imaximaimath/Home][imaxima and imath]], since they're not conflicting with Melpa packages.
+
+***** Imaxima                                                        :BROKEN:
+      Load it and make it so that, when we open it, the buffer is in Maxima
+      mode.
+      #+begin_src emacs-lisp :tangle yes
+        (use-package imaxima
+          :custom
+          (imaxima-use-maxima-mode-flag t))
+      #+end_src
+
+***** Imath
+      Load Imath and that's it.
+      #+begin_src emacs-lisp :tangle yes
+        (use-package imath)
+      #+end_src
+
+**** Integrations
+
+***** Company
+      Load and activate an ensemble of completion backends for Company.
+      #+begin_src emacs-lisp :tangle yes
+        (use-package company-maxima
+          :after company
+          :config
+          (add-to-list 'company-backends
+                       '(company-maxima-symbols company-maxima-libraries)))
+      #+end_src
+
 * Emacs options
   What follow are all the configuration options for core
   Emacs. Anything that is not package-related is configured here.
