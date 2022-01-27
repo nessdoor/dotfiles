@@ -317,13 +317,14 @@
 *** YASnippet
     Load [[https://github.com/joaotavora/yasnippet][YASnippet]] and reload all snippets, being careful to make sure
     that the [[*Premade snippets][premade snippets]] are already present and that [[*Company][Company]] is
-    loaded (see [[*company-yasnippet backend][company-yasnippet backend]]).
+    loaded (see [[*company-yasnippet backend][company-yasnippet backend]]). Also activate it globally.
 #+begin_src emacs-lisp :tangle yes
   (use-package yasnippet
     :ensure t
     :after (yasnippet-snippets company)
     :config
     (yas-reload-all)
+    (yas-global-mode)
 #+end_src
 
 **** Move to another prefix
@@ -343,29 +344,24 @@
      way, but never fails to provide completions. That's the reason why
      it is placed at the end of the chain.
 
-     Therefore, in order to make the YASnippet backend available
-     without compromising the functionality of all the other backends,
-     it looks like that a good choice would be to group it with the
-     Dabbrev one.
+     Therefore, in order to make the YASnippet backend available without
+     compromising the functionality of all the other backends, people seem to
+     take inspiration from this [[https://github.com/syl20bnr/spacemacs/pull/179][Spacemacs pull request]], and pair the YAS backend
+     to all other backends (with the ~:with~ keyword).
 
-     The following code does exactly this. For some reason, it didn't
-     work when set as a hook for the YAS minor mode, therefore it
-     modifies the global list directly.
-#+begin_src emacs-lisp :tangle yes
-  (setq company-backends (nreverse company-backends))
-  (setcar company-backends `(,(car company-backends) :with company-yasnippet))
-  (setq company-backends (nreverse company-backends))
-#+end_src
-
-     Remember that the group needs to be a well-formed list, not a cons
-     cell.
-
-**** Hooking
-     Hook the YASnippet minor mode to various modes where it can be
-     useful.
-#+begin_src emacs-lisp :tangle yes
-  :hook ((prog-mode org-mode) . yas-minor-mode)
-#+end_src
+     The code is reused here in a lambda form.
+     #+begin_src emacs-lisp :tangle yes
+       (setq company-backends (mapcar
+                               (lambda (backend)
+                                 (if (and (listp backend)
+                                          (member 'company-yasnippet backend))
+                                     backend
+                                   (append
+                                    (if (consp backend)
+                                        backend
+                                      (list backend)) '(:with company-yasnippet))))
+                               company-backends))
+     #+end_src
 
 **** Forced expansion
      Use =y= after the prefix to force a YASnippet expansion.
