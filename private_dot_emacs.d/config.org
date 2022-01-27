@@ -318,25 +318,35 @@
     Load [[https://github.com/joaotavora/yasnippet][YASnippet]] and reload all snippets, being careful to make sure
     that the [[*Premade snippets][premade snippets]] are already present and that [[*Company][Company]] is
     loaded (see [[*company-yasnippet backend][company-yasnippet backend]]). Also activate it globally.
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes :noweb no-export
   (use-package yasnippet
     :ensure t
     :after (yasnippet-snippets company)
     :config
     (yas-reload-all)
     (yas-global-mode)
+    <<yas-config>>
+    :bind
+    <<yas-bind>>)
 #+end_src
 
 **** Move to another prefix
      YAS uses the =C-c &= prefix for his things. Since this is already
      used pretty well by [[help:org-mark-ring-goto][org-mark-ring-goto]], remap it to =C-c y=.
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no :noweb-ref yas-config
   (define-key yas-minor-mode-map (kbd "C-c y") (lookup-key yas-minor-mode-map (kbd "C-c &")))
   (define-key yas-minor-mode-map (kbd "C-c &") nil)
 #+end_src
 
+**** Forced expansion
+     Use =y= after the prefix to force a YASnippet expansion.
+     #+begin_src emacs-lisp :tangle no :noweb-ref yas-bind
+       (:map yas-minor-mode-map
+             ("C-c y y" . yas-expand))
+     #+end_src
+
 **** company-yasnippet backend
-     According to [[help:company-yasnippet][the manual page]], company-yasnippet is not the most
+     According to [[help:company-yasnippet][its manual page]], company-yasnippet is not the most
      well-behaving backend, since it stops all others from continuing
      its work.
 
@@ -349,26 +359,36 @@
      take inspiration from this [[https://github.com/syl20bnr/spacemacs/pull/179][Spacemacs pull request]], and pair the YAS backend
      to all other backends (with the ~:with~ keyword).
 
-     The code is reused here in a lambda form.
-     #+begin_src emacs-lisp :tangle yes
-       (setq company-backends (mapcar
-                               (lambda (backend)
-                                 (if (and (listp backend)
-                                          (member 'company-yasnippet backend))
-                                     backend
-                                   (append
-                                    (if (consp backend)
-                                        backend
-                                      (list backend)) '(:with company-yasnippet))))
+     First, we define a well-behaved function that appends the YAS backend to
+     any other backend, skipping any group of backends where YAS has already
+     been added.
+     #+begin_src emacs-lisp :tangle no :noweb-ref yas-config
+       (defun tal/yas-append-function (backend)
+          "Append the YASnippet backend to a Company backend not already accompanied by it."
+          (if (and (listp backend)
+                   (member 'company-yasnippet backend))
+              backend
+            (append
+             (if (consp backend)
+                 backend
+               (list backend)) '(:with company-yasnippet))))
+     #+end_src
+
+     Then, perform an initial mapcar over all the already-loaded backends.
+     #+begin_src emacs-lisp :tangle no :noweb-ref yas-config
+       (setq company-backends (mapcar #'tal/yas-append-function
                                company-backends))
      #+end_src
 
-**** Forced expansion
-     Use =y= after the prefix to force a YASnippet expansion.
+     Just to be safe, define an autoload for the function, so that code can
+     implicitly require YAS if it is modifying the backend list and needs to
+     fixup it with the YAS cons cells.
      #+begin_src emacs-lisp :tangle yes
-       :bind
-       (:map yas-minor-mode-map
-             ("C-c y y" . yas-expand)))
+       (autoload
+         'tal/yas-append-function
+         "yasnippet"
+         "Append the YASnippet backend to a Company backend not already accompanied by it."
+         nil)
      #+end_src
 
 **** Premade snippets
