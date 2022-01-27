@@ -377,9 +377,9 @@
   (use-package yasnippet-snippets :ensure t)
 #+end_src
 
-***** TODO Helm completion
+***** Helm completion                                              :DISABLED:
       Use the Helm interface to fill in snippets.
- #+begin_src emacs-lisp :tangle yes
+ #+begin_src emacs-lisp :tangle no
    (require 'helm)
    (defun shk-yas/helm-prompt (prompt choices &optional display-fn)
        "Use helm to select a snippet. Put this into `yas-prompt-functions.'"
