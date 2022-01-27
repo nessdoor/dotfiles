@@ -326,6 +326,21 @@
   (delete 'company-clang company-backends))
 #+end_src
 
+**** Math symbols
+     Use [[https://github.com/vspinu/company-math][company-math]] for mathematical symbols and other Unicode characters to
+     show up as completion suggestions when typing them in LaTeX =\= notation.
+     #+begin_src emacs-lisp :tangle yes :noweb yes
+       (use-package company-math
+         :after (tex company)
+         :config
+         (add-to-list 'company-backends
+                      <<company-math-backends>>))
+     #+end_src
+     #+name: company-math-backends
+     #+begin_src emacs-lisp :tangle no :exports none
+       '(company-math-symbols-unicode company-math-symbols-latex)
+     #+end_src
+
 *** YASnippet
     Load [[https://github.com/joaotavora/yasnippet][YASnippet]] and reload all snippets, being careful to make sure
     that the [[*Premade snippets][premade snippets]] are already present and that [[*Company][Company]] is
@@ -1099,17 +1114,6 @@
     (add-to-list 'company-backends 'company-reftex-citations))
 #+end_src
 
-***** Math symbols
-      Use [[https://github.com/vspinu/company-math][company-math]] for mathematical symbols and other Unicode
-      characters suggestion to show up as completion suggestions.
-#+begin_src emacs-lisp :tangle yes
-  (use-package company-math
-    :after (tex company)
-    :config
-    (append '((company-math-symbols-unicode company-math-symbols-latex))
-            company-backends))
-#+end_src
- 
 *** AsciiDoc
     Add support for writing AsciiDoc documentation.
     #+begin_src emacs-lisp :tangle yes
