@@ -36,6 +36,18 @@
     (require 'use-package))
 #+end_src
 
+* Definitions
+
+** Autoloads
+   Since not everything is managed through [[*use-package][use-package]]'s autoloading macros,
+   autoloads for some delayed function definitions must be added early in the
+   file, so that hard dependencies are broken.
+
+   This is an insertion point for all those autoloads.
+   #+begin_src emacs-lisp :tangle yes :noweb no-export
+     <<early-autoload>>
+   #+end_src
+
 * Customize
 ** Customize plug-in point
     Set the path where M-x customize saves its settings, and load from it.
@@ -357,7 +369,11 @@
      Therefore, in order to make the YASnippet backend available without
      compromising the functionality of all the other backends, people seem to
      take inspiration from this [[https://github.com/syl20bnr/spacemacs/pull/179][Spacemacs pull request]], and pair the YAS backend
-     to all other backends (with the ~:with~ keyword).
+     to all other backends through the following keyworded cons cell:
+     #+name: company-yas-with-cell
+     #+begin_src emacs-lisp :tangle no
+       '(:with company-yasnippet)
+     #+end_src
 
      First, we define a well-behaved function that appends the YAS backend to
      any other backend, skipping any group of backends where YAS has already
@@ -380,10 +396,10 @@
                                company-backends))
      #+end_src
 
-     Just to be safe, define an autoload for the function, so that code can
-     implicitly require YAS if it is modifying the backend list and needs to
-     fixup it with the YAS cons cells.
-     #+begin_src emacs-lisp :tangle yes
+     Just to be safe, define an early autoload for the function, so that code
+     can implicitly require YAS if it is modifying the backend list and needs to
+     fix it up with the YAS cons cells.
+     #+begin_src emacs-lisp :tangle no :noweb-ref early-autoload
        (autoload
          'tal/yas-append-function
          "yasnippet"
