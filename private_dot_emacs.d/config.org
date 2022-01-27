@@ -1065,54 +1065,126 @@
    other things, here are the packages for managing bibliographies for
    technical publications.
 
-*** AUCTeX
-    [[https://www.gnu.org/software/auctex/][GNU documentation]]
-#+begin_src emacs-lisp :tangle yes
-  (use-package tex
-    :ensure auctex
-    :custom
-#+end_src
-**** Style autosave and parsing 
-     I don't really get this, but somehow it should be here.
-#+begin_src emacs-lisp :tangle yes
-    (TeX-auto-save t)
-    (TeX-parse-self t)
-#+end_src
-**** auto-fill mode
-     Enable auto-fill-mode in TeX buffers, so that the resulting
-     document looks cleaner.
- #+begin_src emacs-lisp :tangle yes
-    :config
-    (add-hook 'TeX-mode-hook 'auto-fill-mode))
- #+end_src
+*** TeX
+
+**** AUCTeX
+     [[https://www.gnu.org/software/auctex/][GNU documentation]]
+     #+begin_src emacs-lisp :tangle yes
+       (use-package tex
+         :ensure auctex
+         :custom
+     #+end_src
+***** Style autosave and parsing
+      I don't really get this, but somehow it should be here.
+      #+begin_src emacs-lisp :tangle yes
+          (TeX-auto-save t)
+          (TeX-parse-self t)
+      #+end_src
+***** auto-fill mode
+      Enable auto-fill-mode in TeX buffers, so that the resulting
+      document looks cleaner.
+      #+begin_src emacs-lisp :tangle yes
+         :config
+         (add-hook 'TeX-mode-hook 'auto-fill-mode))
+      #+end_src
+
+**** RefTeX
+     [[https://www.gnu.org/software/emacs/manual/html_mono/reftex.html][Online manual]]
+
+     #+begin_src emacs-lisp :tangle yes :noweb no-export
+       (with-eval-after-load 'tex
+         (require 'reftex)
+         <<rftx-conf>>)
+     #+end_src
+
+***** Auto-activation
+      Auto-activate RefTeX inside all [[*AUCTeX][LaTeX mode]] buffers.
+      #+begin_src emacs-lisp :tangle no :noweb-ref rftx-conf
+        (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+      #+end_src
+
+***** AUCTeX integration
+      Activate the [[info:reftex#AUCTeX-RefTeX Interface][AUCTeX-RefTeX Interface]] and allow RefTeX to complete:
+      - labels (flag 2)
+      - refs (flag 3)
+      - index stuff (flag 5)
+      #+begin_src emacs-lisp :tangle no :noweb-ref rftx-conf
+        (setq reftex-plug-into-AUCTeX
+              '(nil t t nil t))
+      #+end_src
+
+      Other supports are disabled because:
+      - new labels (flag 1): I don't want RefTeX to auto-insert labels (I want to
+        craft my own)
+      - supply arguments to ~\cite~ (flag 4): I use [[*helm-bibtex][helm-bibtex]]
 
 **** Company integration
-     Load the autocompletion machinery for editing TeX documents.
+     Add some specialized backends to [[help:company-backends][company-backends]] when inside LaTeX
+     documents. First, the necessary packages are described, then the hooking
+     code is explained.
 
 ***** Generic autocompletion
       [[https://github.com/alexeyr/company-auctex/][Company-AUCTeX]], a Company backend for AUCTeX.
-#+begin_src emacs-lisp :tangle yes
-  (use-package company-auctex
-    :after (tex company)
-    :config
-    (company-auctex-init)
-#+end_src
-      Load backends for macros and environments.
-#+begin_src emacs-lisp :tangle yes
-    (append '((company-auctex-macros company-auctex-environments))
-            company-backends))
-#+end_src
+      #+begin_src emacs-lisp :tangle yes
+        (use-package company-auctex
+          :after (tex company))
+      #+end_src
 
-***** References
-      [[https://github.com/TheBB/company-reftex][company-reftex]] provides completion services for labels and
-      citations.
-#+begin_src emacs-lisp :tangle yes
-  (use-package company-reftex
-    :after (tex reftex company)
-    :config
-    (add-to-list 'company-backends 'company-reftex-labels)
-    (add-to-list 'company-backends 'company-reftex-citations))
-#+end_src
+      The built-in [[help:company-auctex-init][company-auctex-init]] adds some backends superseded by the
+      [[*RefTeX-specific backends][RefTeX-specific backends]], therefore we will only use:
+      #+begin_src emacs-lisp :tangle no :noweb-ref latex-company-backends
+        '(company-auctex-macros company-auctex-symbols company-auctex-environments)
+      #+end_src
+
+***** RefTeX-specific backends
+      [[https://github.com/TheBB/company-reftex][company-reftex]] provides completion services for labels and citations.
+      #+begin_src emacs-lisp :tangle yes
+        (use-package company-reftex
+          :after (tex reftex company))
+      #+end_src
+
+      These are its backends:
+      #+begin_src emacs-lisp :tangle no :noweb-ref latex-company-backends
+         '(company-reftex-labels company-reftex-citations)
+      #+end_src
+
+***** Hooking into LaTeX buffers
+      LaTeX backends should be:
+      - activated only inside LaTeX buffers
+      - grouped together
+
+      In addition, the [[*Math symbols][backends for math symbols]] should also be grouped in a
+      special way, as mentioned in [[https://www.emacswiki.org/emacs/company-math#h5o-3][this Emacs Wiki page]]. Therefore, the
+      resulting grouped backends look like this:
+      #+name: latex-company-backends-group
+      #+begin_src emacs-lisp :tangle no :noweb no-export
+        (append
+         <<company-math-backends>>
+         <<latex-company-backends>>)
+      #+end_src
+
+      But first, remember that the math backends are already part of the global
+      list (with the appended [[*company-yasnippet backend][company-yasnippet backend]]), so produce a copy of
+      this without such backends:
+      #+name: company-backends-nomath
+      #+begin_src emacs-lisp :tangle no :noweb no-export
+        (remove
+         (tal/yas-append-function <<company-math-backends>>)
+         company-backends)
+      #+end_src
+
+      Finally, use a lambda to hook the backend list-generating code, including
+      a call to [[help:tal/yas-append-function][tal/yas-append-function]] in order to make LaTeX snippets
+      available:
+      #+begin_src emacs-lisp :tangle yes :noweb no-export
+        (add-hook 'LaTeX-mode-hook
+                  (lambda nil
+                    (setq-local company-backends
+                                (cons
+                                 (tal/yas-append-function
+                                  <<latex-company-backends-group>>)
+                                 <<company-backends-nomath>>))))
+      #+end_src
 
 *** AsciiDoc
     Add support for writing AsciiDoc documentation.
