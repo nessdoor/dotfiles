@@ -2142,3 +2142,12 @@
      (winner-mode 1)
    #+end_src
 
+** Special characters
+
+*** Ellipsis
+    Use the UTF-8 U+2026 Horizontal Ellipsis '=…=' character for all cases of
+    ellipsis.
+    #+begin_src emacs-lisp :tangle yes
+      (setq truncate-string-ellipsis "…")
+    #+end_src
+
