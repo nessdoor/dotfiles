@@ -1822,6 +1822,13 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
 
 *** LaTeX
 
+**** Compiler
+Use [[https://www.ctan.org/pkg/latexmk/][latexmk]] for compilation.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-latex-pdf-process
+        (list "latexmk -pdflatex='%latex -shell-escape -interaction=nonstopmode' -pdf -f -output-directory=%o %f"))
+#+end_src
+
 **** Inline previews
      Inside graphical clients, inline LaTeX can be previewed by delegating the
      rendering to an external program that is able to convert markup into
