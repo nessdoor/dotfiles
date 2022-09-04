@@ -1644,6 +1644,14 @@ Enable Flyspell for both textual and programming modes.
 
 ** Dired
 
+*** ls switches
+Add switches to the default ~ls~ invocation.
+#+begin_src emacs-lisp :tangle yes
+  (setq dired-listing-switches
+        (concat dired-listing-switches
+                "h"))
+#+end_src
+
 *** Auto revert
     Automatically revert Dired buffers if directory changes have been
     detected.
