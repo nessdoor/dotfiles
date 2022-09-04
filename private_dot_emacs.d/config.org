@@ -959,6 +959,19 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
         (setq dap-python-debugger 'debugpy) ; Necessary until they default it
       #+end_src
 
+***** LLDB
+Load the adapter for all languages supporting LLDB.
+#+begin_src emacs-lisp :tangle yes
+  (require 'dap-lldb)
+#+end_src
+
+***** Native debug
+Use [[https://github.com/WebFreak001/code-debug][code-debug]] for a native interface to GDB and LLDB (necessary for some languages).
+#+begin_src emacs-lisp :tangle yes
+  (require 'dap-gdb-lldb)
+  (dap-gdb-lldb-setup)
+#+end_src
+
 **** Automatic hydra
      Since dap-mode comes with an integrated command hydra, follow the official
      recommendations and make it appear automatically when hitting a breakpoint.
