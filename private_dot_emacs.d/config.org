@@ -48,6 +48,32 @@
      <<early-autoload>>
    #+end_src
 
+** Custom functions
+
+*** Restart a dead shell
+    Following this [[https://superuser.com/a/463388][Superuser answer]], this function restarts a shell inside a
+    [[help:shell-mode][shell-mode]] buffer. This can be useful, for example, if you left a remote
+    shell open and disconnected from the network.
+    #+begin_src emacs-lisp :tangle yes
+      (defun restart-shell ()
+        (interactive)
+        (shell (current-buffer)))
+    #+end_src
+
+*** Ediff: use both diffs when merging changes
+    For some reason, this functionality is not present in Ediff. Use the snippet
+    found in this [[https://stackoverflow.com/a/29757750/13140497][Stack Overflow answer]].
+    #+begin_src emacs-lisp :tangle yes
+      (defun ediff-copy-both-to-C ()
+        (interactive)
+        (ediff-copy-diff ediff-current-difference nil 'C nil
+                         (concat
+                          (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                          (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+      (defun add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+      (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
+    #+end_src
+
 * Customize
 ** Customize plug-in point
     Set the path where M-x customize saves its settings, and load from it.
