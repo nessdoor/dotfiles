@@ -1867,6 +1867,15 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
   (define-key global-map "\C-cl" 'org-store-link)
 #+end_src
 
+**** metaleft and metaright
+     Since I am moving in Evil's normal mode most of the time, remap the =C-c
+     C-x l= and =C-c C-x r= so that =l= and =r= are replaced by =h= and =l=.
+     #+begin_src emacs-lisp :tangle yes
+       (define-key org-mode-map (kbd "C-c C-x h") 'org-metaleft)
+       (define-key org-mode-map (kbd "C-c C-x l") 'org-metaright)
+       (define-key org-mode-map (kbd "C-c C-x r") nil)
+     #+end_src
+
 **** Minor modes for Org buffers
      Activate auto-filling in all Org buffers.
 #+begin_src emacs-lisp :tangle yes
