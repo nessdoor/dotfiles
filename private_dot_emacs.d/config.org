@@ -163,6 +163,10 @@
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'flycheck-error-list-mode 'motion)
         #+end_src
+      - [[help:list-processes][Process lists]]
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'process-menu-mode 'motion)
+        #+end_src
 
 ***** Emacs state
       For those modes were even HJKL motion is uncomfortable.
