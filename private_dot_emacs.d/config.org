@@ -1868,6 +1868,22 @@ Use the ~listings~ package to export source code.
   (setq org-latex-listings 'listings)
 #+end_src
 
+**** Hyperref
+Use a modified [[https://www.ctan.org/pkg/hyperref][hyperref]] template (that, more than anything else, colors links
+properly and avoids the ugly boxes).
+#+begin_src emacs-lisp :tangle yes
+  (setq org-latex-hyperref-template
+        "\\hypersetup{
+         pdfauthor={%a},
+         pdftitle={%t},
+         pdfkeywords={%k},
+         pdfsubject={%d},
+         pdfcreator={%c},
+         pdflang={%L},
+         colorlinks=true}
+        ")
+#+end_src
+
 *** Entities
     By default, activate UTF8 entity rendering in all Org buffers (consult the
     output of ~org-entities-help~ for a list of recognized entities).
