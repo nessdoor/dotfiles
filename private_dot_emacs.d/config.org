@@ -1429,12 +1429,12 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
     - [[http://bbdb.sourceforge.net/bbdb.html][Online manual]]
     - [[https://blog.petitepomme.net/post/28547901478/installing-and-configuring-bbdb-3][An helpful blog post about configuring BBDB3]]
 
-    Activate and make available BBDB inside the =mail= and Gnus interfaces.
+    Activate and make available BBDB inside the =message= and Gnus interfaces.
     #+begin_src emacs-lisp :tangle yes
       (use-package bbdb
         :ensure t
         :config
-        (bbdb-initialize 'mail 'message 'gnus)
+        (bbdb-initialize 'message 'gnus)
     #+end_src
 
 **** MUA integration
@@ -1447,7 +1447,7 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
      users to enable this functionality only in certain cases
      (e.g. only for outgoing messages).
      #+begin_src emacs-lisp :tangle yes
-         (bbdb-mua-auto-update-init 'mail 'message 'gnus)
+         (bbdb-mua-auto-update-init 'message 'gnus)
      #+end_src
 
      By default, when you press the =:/;= keys without a prefix, a
