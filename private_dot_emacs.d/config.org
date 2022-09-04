@@ -1489,6 +1489,16 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
 
 ** Others
 
+*** Elpher
+    [[gopher://thelambdalab.xyz/1/projects/elpher/][Homepage]]
+
+    I wanted to explore the alternative Internet of Gopher and Gemini. That kind
+    of Internet is littered with plaintext. Emacs is good at
+    plaintext. Therefore, Gopher/Gemini browser in Emacs.
+    #+begin_src emacs-lisp :tangle yes
+      (use-package elpher)
+    #+end_src
+
 *** Maxima
     There is a little unfortunate situation regarding Maxima support in
     Emacs. Currently, there are two =maxima.el= (and =maxima-font-lock.el=) in
