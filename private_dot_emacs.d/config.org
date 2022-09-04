@@ -2224,3 +2224,11 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
       (setq truncate-string-ellipsis "…")
     #+end_src
 
+** Histories
+
+*** Minibuffer history
+    Save minibuffer history, as simple as that.
+    #+begin_src emacs-lisp :tangle yes
+      (savehist-mode 1)
+    #+end_src
+
