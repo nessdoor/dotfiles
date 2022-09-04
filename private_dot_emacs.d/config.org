@@ -1846,6 +1846,19 @@ Use [[https://www.ctan.org/pkg/latexmk/][latexmk]] for compilation.
        (setq org-preview-latex-image-directory "/tmp/ltximg/")
      #+end_src
 
+**** IEEE transactions class
+     #+begin_src emacs-lisp :tangle yes
+       (eval-after-load 'ox-latex
+         '(progn
+            (setq ieetran-org-latex-class '("IEEEtran" "\\documentclass[11pt]{IEEEtran}"
+                                            ("\\section{%s}" . "\\section*{%s}")
+                                            ("\\subsection{%s}" . "\\subsection*{%s}")
+                                            ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                                            ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                                            ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+            (add-to-list 'org-latex-classes ieetran-org-latex-class t)))
+     #+end_src
+
 *** Entities
     By default, activate UTF8 entity rendering in all Org buffers (consult the
     output of ~org-entities-help~ for a list of recognized entities).
