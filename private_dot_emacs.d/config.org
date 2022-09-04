@@ -1848,6 +1848,10 @@ incremental search among all fields.
       #+begin_src emacs-lisp :tangle yes
           (maxima . t)
       #+end_src
+    - Python
+      #+begin_src emacs-lisp :tangle yes
+          (python . t)
+      #+end_src
     - Shell
       #+begin_src emacs-lisp :tangle yes
           (shell . t)))
