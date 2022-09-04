@@ -288,13 +288,63 @@
 *** undo-tree
     Replace the stock undo system with [[https://github.com/apchamberlain/undo-tree.el][undo-tree]], allowing for forking
     undo/redo histories.
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes :noweb yes
   (use-package undo-tree
     :ensure t
     :demand t
     :delight undo-tree-mode
     :config
+    <<ut-additional-conf>>
     (global-undo-tree-mode 1))
+#+end_src
+
+**** Region-based undo
+Allow undo-tree to manage undos/redos limited to regions.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (setq undo-tree-enable-undo-in-region t)
+#+end_src
+
+**** Incompatible modes
+By default, undo-tree is inactive only in buffers without a backing file and
+[[help:term-mode][term-mode]] buffers.
+
+We already activated the mode in more buffers than we should with the setting in
+[[*Tree undo system][the settings related to Evil]], so we should add more incompatible modes to the
+list.
+
+In addition, there are some modes that, apparently, haven't been taken into
+account by the creator (which is a legitimate thing, given the feature-creep of
+Emacs).
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (add-to-list 'undo-tree-incompatible-major-modes
+               'image-mode)
+#+end_src
+
+**** Persistent undo trees
+undo-tree now supports persistent undo trees. By default, these files are saved
+beside the original. Use the same policy for backup files, instead (probably,
+this makes backup files obsolete).
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (setq undo-tree-history-directory-alist
+        `(("." . ,(concat user-emacs-directory
+                          (convert-standard-filename "undo/")))))
+#+end_src
+
+**** Compression
+Transparently compress undo history files using =gzip= (as per [[https://www.dr-qubit.org/undo-tree/undo-tree.txt][undo-tree.txt]]).
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (defadvice undo-tree-make-history-save-file-name
+      (after undo-tree activate)
+    (setq ad-return-value (concat ad-return-value ".gz")))
+#+end_src
+
+**** Limits
+Since we're storing undo trees semi-permanently, we have to tighten the memory
+bounds, otherwise we overload Emacs every time we open a long-lived file.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (setq undo-tree-limit 4000000
+        undo-tree-strong-limit 8000000
+        undo-tree-outer-limit 12000000)
 #+end_src
 
 *** Company
