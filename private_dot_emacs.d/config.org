@@ -1603,6 +1603,13 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
   (add-hook 'text-mode-hook 'auto-fill-mode)
 #+end_src
 
+** Spell-checking
+Enable Flyspell for both textual and programming modes.
+#+begin_src emacs-lisp :tangle yes
+  (add-hook 'text-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+#+end_src
+
 ** Enable disabled functionalities
    This section contains directives that explicitly enable some
    commands that come disabled with stock Emacs installations.
