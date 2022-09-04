@@ -1572,10 +1572,18 @@
     #+end_src
 
 *** WDired
-    Allow Dired to change permission bits whenever possible.
-#+begin_src emacs-lisp :tangle yes
-  (setq wdired-allow-to-change-permissions t)
-#+end_src
+
+**** Activation key
+     Bind =C-c w= to [[help:wdired-change-to-wdired-mode][wdired-change-to-wdired-mode]].
+     #+begin_src emacs-lisp :tangle yes
+       (define-key dired-mode-map (kbd "C-c w") 'wdired-change-to-wdired-mode)
+     #+end_src
+
+**** Permissions
+     Allow Dired to change permission bits whenever possible.
+     #+begin_src emacs-lisp :tangle yes
+       (setq wdired-allow-to-change-permissions t)
+     #+end_src
 
 ** Ibuffer
    Use [[help:ibuffer-mode][ibuffer-mode]] when listing currently open buffers.
