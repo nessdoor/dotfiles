@@ -1859,6 +1859,15 @@ Use [[https://www.ctan.org/pkg/latexmk/][latexmk]] for compilation.
             (add-to-list 'org-latex-classes ieetran-org-latex-class t)))
      #+end_src
 
+**** Listings
+Use the ~listings~ package to export source code.
+#+begin_src emacs-lisp :tangle yes
+  (require 'ox-latex)
+  (add-to-list 'org-latex-packages-alist '("" "listings"))
+  (add-to-list 'org-latex-packages-alist '("" "color"))
+  (setq org-latex-listings 'listings)
+#+end_src
+
 *** Entities
     By default, activate UTF8 entity rendering in all Org buffers (consult the
     output of ~org-entities-help~ for a list of recognized entities).
