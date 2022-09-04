@@ -135,9 +135,10 @@
     :demand t
 #+end_src
     Then, activate Evil globally.
-#+begin_src emacs-lisp :tangle yes
-    :config
-    (evil-mode 1)
+#+begin_src emacs-lisp :tangle yes :noweb no-export
+  :config
+  (evil-mode 1)
+  <<evil-config>>
 #+end_src
 
 **** Initial states
@@ -197,6 +198,15 @@
   :config
   (add-hook 'evil-local-mode-hook 'turn-on-undo-tree-mode))
 #+end_src
+
+**** Remapping
+     - Evil in Insert state uses =C-p=/=C-n= for its own completion
+       mechanism. Unfortunately, this is the same thing done by [[*Company][Company]]. Remove
+       the Evil mappings, as the Company byndings are much more valuable.
+       #+begin_src emacs-lisp :tangle no :noweb-ref evil-config
+         (evil-global-set-key 'insert (kbd "C-p") nil)
+         (evil-global-set-key 'insert (kbd "C-n") nil)
+       #+end_src
 
 **** Evil extras
      Extra functionalities ported from Vim, enabled globally.
