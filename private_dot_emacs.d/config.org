@@ -152,10 +152,15 @@
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'tar-mode 'motion)
         #+end_src
-      - Lsp session browser
+      - LSP session browser
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'lsp-browser-mode 'motion)
         #+end_src
+      - LSP UI Imenu
+        #+begin_src emacs-lisp :tangle yes
+          (evil-set-initial-state 'lsp-ui-imenu-mode 'motion)
+        #+end_src
+
       - IBuffer
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'ibuffer-mode 'motion)
