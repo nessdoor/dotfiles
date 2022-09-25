@@ -705,6 +705,36 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
     :after (evil iedit))
 #+end_src
 
+*** with-editor
+[[https://github.com/magit/with-editor][Repo]]
+
+Make whatever needs an editor use Emacsclient.
+#+begin_src emacs-lisp :tangle yes :noweb no-export
+  (use-package with-editor
+    :ensure t
+    :config
+    <<with-editor-config>>
+    :hook
+    <<with-editor-hook>>
+    )
+#+end_src
+
+**** Export editor to all sub-processes
+Enable the global [[help:shell-command-with-editor-mode][shell-command-with-editor-mode]] minor mode, making all
+sub-processes use the parent Emacs as their editor of choice.
+#+begin_src emacs-lisp :tangle no :noweb-ref with-editor-config
+  (shell-command-with-editor-mode 1)
+#+end_src
+
+**** Hooking into shells
+Register Emacsclient as the editor for all sub-shells.
+#+begin_src emacs-lisp :tangle no :noweb-ref with-editor-hook
+  (shell-mode . with-editor-export-editor)
+  (eshell-mode . with-editor-export-editor)
+  (term-exec . with-editor-export-editor)
+  (vterm-exec . with-editor-export-editor)
+#+end_src
+
 ** Programming support
    The packages that follow add various features to aid in program
    development.
