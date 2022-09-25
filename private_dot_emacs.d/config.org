@@ -776,34 +776,54 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
  #+end_src
 
 *** LSP
-    [[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
+[[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
    
-    Load lsp-mode.
+Load lsp-mode.
 #+begin_src emacs-lisp :tangle yes :noweb no-export
   (use-package lsp-mode
-    :init
-    (setq lsp-keymap-prefix "C-c l")
     :commands lsp lsp-deferred
+    :init
+    <<lsp-init>>
     :custom
     <<lsp-custom>>
+    :config
+    <<lsp-config>>
 #+end_src
 
-**** Performance settings
-     According to [[https://emacs-lsp.github.io/lsp-mode/page/performance/][official sources]] and the output of [[help:lsp-doctor][the doctor]], these
-     settings make LSP performance decent.
+**** Keybindings
+Change the prefix of LSP commands from =s-l= to =C-c l=.
 
-     - Increase GC threshold to 100MB
-     - Increase the maximum amount of read data from a remote process
-       to 1MiB
-#+begin_src emacs-lisp :tangle yes
-  :config
+Now, this is trickier than one could imagine. Placing the following under the
+~:init~ property works, *unless* you're byte-compiling your startup file.
+#+begin_src emacs-lisp :tangle no :noweb-ref lsp-init
+  (setq lsp-keymap-prefix "C-c l")
+#+end_src
+
+In order to make it work even when compiling, we must register the prefix with
+the map directly, as indicated in [[https://github.com/emacs-lsp/lsp-mode/issues/1672#issuecomment-626277665][this Github comment]].
+#+begin_src emacs-lisp :tangle no :noweb-ref lsp-config
+  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+#+end_src
+
+Now, I know that we shouldn't be too demanding, but the [[https://github.com/emacs-lsp/lsp-mode/issues/1672][issue]] has been known for
+quite some time and, like with other small annoying problems (for example, the
+unclean termination of remote sessions, or remote sessions hanging on startup
+unless ~lsp-log-io~ is set to ~t~,...), the maintainers didn't show much
+interest in solving it.
+
+**** Performance settings
+According to [[https://emacs-lsp.github.io/lsp-mode/page/performance/][official sources]] and the output of [[help:lsp-doctor][the doctor]], these settings make
+LSP performance decent.
+
+- Increase GC threshold to 100MB
+- Increase the maximum amount of read data from a remote process to 1MiB
+#+begin_src emacs-lisp :tangle no :noweb-ref lsp-config
   (setq gc-cons-threshold 100000000)
   (setq read-process-output-max (* 1024 1024))
 #+end_src
 
 **** Mode hooks
-     Here is the place to register which modes trigger the activation
-     of LSP.
+Here is the place to register which modes trigger the activation of LSP.
 #+begin_src emacs-lisp :tangle yes :noweb no-export
   :hook
   ((c-mode . lsp-deferred)
@@ -815,7 +835,7 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
    <<lsp-language-mode-hook>>
 #+end_src
 
-     Also activate code lenses when in an LSP-serviced buffer.
+Also activate code lenses when in an LSP-serviced buffer.
 #+begin_src emacs-lisp :tangle yes
   (lsp-mode . lsp-lens-mode)))
 #+end_src
