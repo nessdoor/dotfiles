@@ -788,9 +788,23 @@ Load lsp-mode.
     <<lsp-custom>>
     :config
     <<lsp-config>>
+    :bind
+    <<lsp-global-bind>>
+      :map lsp-command-map
+      <<lsp-map-bind>>
+    :hook
+    ((c-mode . lsp-deferred)
+     (python-mode . lsp-deferred)
+     (scala-mode . lsp-deferred)
+     (nix-mode . lsp-deferred)
+     (haskell-mode . lsp-deferred)
+     (haskell-literate-mode . lsp-deferred)
+     <<lsp-language-mode-hook>>
+     <<lsp-hook>>
+     ))
 #+end_src
 
-**** Keybindings
+**** Change command prefix
 Change the prefix of LSP commands from =s-l= to =C-c l=.
 
 Now, this is trickier than one could imagine. Placing the following under the
@@ -822,22 +836,10 @@ LSP performance decent.
   (setq read-process-output-max (* 1024 1024))
 #+end_src
 
-**** Mode hooks
-Here is the place to register which modes trigger the activation of LSP.
-#+begin_src emacs-lisp :tangle yes :noweb no-export
-  :hook
-  ((c-mode . lsp-deferred)
-   (python-mode . lsp-deferred)
-   (scala-mode . lsp-deferred)
-   (nix-mode . lsp-deferred)
-   (haskell-mode . lsp-deferred)
-   (haskell-literate-mode . lsp-deferred)
-   <<lsp-language-mode-hook>>
-#+end_src
-
-Also activate code lenses when in an LSP-serviced buffer.
-#+begin_src emacs-lisp :tangle yes
-  (lsp-mode . lsp-lens-mode)))
+**** Lenses
+Activate code lenses when in an LSP-serviced buffer.
+#+begin_src emacs-lisp :tangle no :noweb-ref lsp-hook
+  (lsp-mode . lsp-lens-mode)
 #+end_src
 
 **** Extras
