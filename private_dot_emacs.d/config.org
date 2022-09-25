@@ -844,26 +844,38 @@ Activate code lenses when in an LSP-serviced buffer.
 
 **** Extras
 ***** LSP UI
-      [[https://emacs-lsp.github.io/lsp-ui/][Homepage]]
+[[https://emacs-lsp.github.io/lsp-ui/][Homepage]]
 
-      Show documentation and [[https://www.flycheck.org/en/latest/index.html][Flycheck]] errors on overlays.
-#+begin_src emacs-lisp :tangle yes
+Show documentation and [[https://www.flycheck.org/en/latest/index.html][Flycheck]] errors on overlays.
+#+begin_src emacs-lisp :tangle yes :noweb no-export
   (use-package lsp-ui
     :after lsp-mode
     :commands lsp-ui-mode
+    :custom
+    <<lsp-ui-custom>>
+    :bind
+    <<lsp-ui-bind>>
+   )
 #+end_src
 
 ****** Sideline
-       Show the hover on the sideline.
-#+begin_src emacs-lisp :tangle yes
-  :config
-  (setq lsp-ui-sideline-show-hover t)
+Show the hover on the sideline.
+#+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-custom
+  (lsp-ui-sideline-show-hover . t)
 #+end_src
 
 ****** Imenu
-       Autorefresh Imenu.
-#+begin_src emacs-lisp :tangle yes
-  (setq lsp-ui-imenu-auto-refresh t))
+
+******* Auto-refresh
+Auto-refresh Imenu.
+#+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-custom
+  (setq lsp-ui-imenu-auto-refresh . t)
+#+end_src
+
+***** Binding
+Bring up the Imenu sidebar with =C-c l g m=.
+#+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-bind
+  (:map lsp-command-map ("g m" . lsp-ui-imenu))
 #+end_src
 
 **** Integrations
