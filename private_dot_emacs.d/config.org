@@ -896,7 +896,7 @@ Show documentation and [[https://www.flycheck.org/en/latest/index.html][Flycheck
 ****** Sideline
 Show the hover on the sideline.
 #+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-custom
-  (lsp-ui-sideline-show-hover . t)
+  (lsp-ui-sideline-show-hover t)
 #+end_src
 
 ****** Imenu
@@ -904,7 +904,7 @@ Show the hover on the sideline.
 ******* Auto-refresh
 Auto-refresh Imenu.
 #+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-custom
-  (setq lsp-ui-imenu-auto-refresh . t)
+  (lsp-ui-imenu-auto-refresh t)
 #+end_src
 
 ***** Binding
