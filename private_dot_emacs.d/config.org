@@ -825,8 +825,9 @@ Load lsp-mode.
     <<lsp-config>>
     :bind
     <<lsp-global-bind>>
-      :map lsp-command-map
-      <<lsp-map-bind>>
+    (:map lsp-command-map
+          <<lsp-map-bind>>
+          )
     :hook
     ((c-mode . lsp-deferred)
      (python-mode . lsp-deferred)
