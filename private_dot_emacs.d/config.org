@@ -816,7 +816,6 @@ Register Emacsclient as the editor for all sub-shells.
 Load lsp-mode.
 #+begin_src emacs-lisp :tangle yes :noweb no-export
   (use-package lsp-mode
-    :commands lsp lsp-deferred
     :init
     <<lsp-init>>
     :custom
@@ -829,15 +828,15 @@ Load lsp-mode.
           <<lsp-map-bind>>
           )
     :hook
-    ((c-mode . lsp-deferred)
-     (python-mode . lsp-deferred)
-     (scala-mode . lsp-deferred)
-     (nix-mode . lsp-deferred)
-     (haskell-mode . lsp-deferred)
-     (haskell-literate-mode . lsp-deferred)
-     <<lsp-language-mode-hook>>
-     <<lsp-hook>>
-     ))
+    (c-mode . lsp-deferred)
+    (python-mode . lsp-deferred)
+    (scala-mode . lsp-deferred)
+    (nix-mode . lsp-deferred)
+    (haskell-mode . lsp-deferred)
+    (haskell-literate-mode . lsp-deferred)
+    <<lsp-language-mode-hook>>
+    <<lsp-hook>>
+    :commands lsp lsp-deferred)
 #+end_src
 
 **** Change command prefix
