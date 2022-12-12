@@ -2231,12 +2231,12 @@ properly and avoids the ugly boxes).
   (setq enable-remote-dir-locals t)
 #+end_src
 
-*** ControlMaster
+*** ControlMaster and Compression
     Keep a persistent connection to the remote host open for at least
-    600s.
+    600s, and use compression.
 #+begin_src emacs-lisp :tangle yes
   (setq tramp-ssh-controlmaster-options
-        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=600")
+        "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=600 -o Compression=yes")
 #+end_src
 
 *** File caching
@@ -2270,6 +2270,13 @@ properly and avoids the ugly boxes).
 #+begin_src emacs-lisp :tangle yes
   (setq conprof-file (expand-file-name "conprof-assoc.el" user-emacs-directory))
   (load conprof-file)
+#+end_src
+
+** vc
+Shorten the list of version control systems to look for when accessing
+directories. It should speed up remote access a little.
+#+begin_src emacs-lisp :tangle yes
+  (setq vc-handled-backends '(Git CVS SVN))
 #+end_src
 
 ** Gnus
