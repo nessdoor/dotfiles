@@ -1778,6 +1778,20 @@ Teach Flycheck how to validate PlantUML buffers.
                        '(company-maxima-symbols company-maxima-libraries)))
       #+end_src
 
+*** Ement
+A Matrix client.
+#+begin_src emacs-lisp :tangle yes
+  (use-package ement)
+#+end_src
+
+*** Mentor
+[[https://github.com/skangas/mentor][Repo]]
+
+An interface to rTorrent.
+#+begin_src emacs-lisp :tangle yes
+  (use-package mentor)
+#+end_src
+
 * Emacs options
   What follow are all the configuration options for core
   Emacs. Anything that is not package-related is configured here.
