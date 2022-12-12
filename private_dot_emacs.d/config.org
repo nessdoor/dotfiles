@@ -418,11 +418,20 @@ bounds, otherwise we overload Emacs every time we open a long-lived file.
   (company-dabbrev-ignore-case nil)
 #+end_src
 
-**** Remove company-clang
-     Since we're programming with [[*LSP][LSP]], disable the Clang backend.
+**** Backends list
+The default list comes with some potentially annoying backends.
+
+First of all, completions based on tag files make the whole experience a lot
+slower inside big repositories, therefore they should be eliminated.
+
+Then, since we're programming with [[*LSP][LSP]], which uses the generic capf, also remove
+the Clang backend.
 #+begin_src emacs-lisp :tangle yes
   :config
-  (delete 'company-clang company-backends))
+  (setq company-backends
+        '(company-bbdb company-semantic company-cmake company-capf company-files
+          (company-dabbrev-code company-keywords) company-oddmuse
+          company-dabbrev)))
 #+end_src
 
 **** Math symbols
