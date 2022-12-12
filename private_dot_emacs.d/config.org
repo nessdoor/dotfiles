@@ -1473,6 +1473,54 @@ Register a debug template for Rust.
   (use-package helm-bibtex :after helm)
 #+end_src
 
+*** PlantUML
+[[https://github.com/skuro/plantuml-mode][Repo]] [[help:plantuml-mode][Manual page]]
+
+A major mode for editing PlantUML sources.
+#+begin_src emacs-lisp :tangle yes :noweb no-export
+  (use-package plantuml-mode
+    :ensure t
+    :custom
+    <<plantuml-custom>>)
+#+end_src
+
+**** Execution mode
+plantuml-mode can compile UML diagrams either via a locally-installed JAR (for
+the default path, see [[help:plantuml-jar-path][plantuml-jar-path]]), the [[plantuml.org][official remote server]] or a
+locally-installed ~plantuml~ binary.
+
+By default, it goes straight to the webservice. Force it to use the
+locally-installed binary, instead.
+#+begin_src emacs-lisp :tangle no :noweb-ref plantuml-custom
+  (plantuml-default-exec-mode 'executable)
+#+end_src
+
+**** Org Babel integration
+Register PlantUML as a usable language inside Org source blocks.
+#+begin_src emacs-lisp :tangle no :noweb-ref babel-language
+  (plantuml . t)
+#+end_src
+
+Unfortunately, Babel doesn't respect the value of [[help:plantuml-default-exec-mode][plantuml-default-exec-mode]]
+that [[*Execution mode][we set earlier]], but instead requires setting [[help:org-plantuml-exec-mode][its own variable]] to
+~'plantuml~ in order to use the executable.
+#+begin_src emacs-lisp :tangle yes
+  (with-eval-after-load 'ob-plantuml
+    (setq org-plantuml-exec-mode 'plantuml))
+#+end_src
+
+**** Flycheck
+[[https://github.com/alexmurray/flycheck-plantuml][Repo]]
+
+Teach Flycheck how to validate PlantUML buffers.
+#+begin_src emacs-lisp :tangle yes
+  (use-package flycheck-plantuml
+    :ensure t
+    :after flycheck
+    :config
+    (flycheck-plantuml-setup))
+#+end_src
+
 *** Roam
     [[https://www.orgroam.com/manual.html][Manual]]
 
@@ -1937,13 +1985,15 @@ incremental search among all fields.
     Enable evaluation of additional languages by loading the appropriate modules
     (refer to the basic table in [[info:org#Languages][the Info page]] and the extended tables on the
     [[https://orgmode.org/worg/org-contrib/babel/languages/index.html][website]]).
-    #+begin_src emacs-lisp :tangle yes
+    #+begin_src emacs-lisp :tangle yes :noweb no-export
       (org-babel-do-load-languages
        'org-babel-load-languages
+       '(
+         <<babel-language>>
     #+end_src
     - Graphviz's Dot
       #+begin_src emacs-lisp :tangle yes
-        '((dot . t)
+          (dot . t)
       #+end_src
     - Emacs Lisp (default)
       #+begin_src emacs-lisp :tangle yes
