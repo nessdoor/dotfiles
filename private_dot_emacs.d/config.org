@@ -694,6 +694,13 @@ the Clang backend.
   (diredp-hide-details-initially-flag nil))
 #+end_src
 
+*** dired-du
+Interface to =du= via Dired.
+#+begin_src emacs-lisp :tangle yes
+  (use-package dired-du
+    :ensure t)
+#+end_src
+
 *** Iedit
     [[https://github.com/victorhge/iedit][Iedit]] allows to edit matched text in a parallel way.
 #+begin_src emacs-lisp :tangle yes
