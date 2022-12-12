@@ -759,6 +759,20 @@ Register Emacsclient as the editor for all sub-shells.
    The packages that follow add various features to aid in program
    development.
 
+*** .editorconfig
+The [[https://editorconfig.org/][EditorConfig]] standard mandates that, when a compliant editor finds an
+`.editorconfig` file in the tree above CWD, it will respect the text formatting
+directives expressed therein.
+
+Make Emacs a compliant editor.
+#+begin_src emacs-lisp :tangle yes
+  (use-package editorconfig
+    :ensure t
+    :delight
+    :config
+    (editorconfig-mode 1))
+#+end_src
+
 *** .vimrc
     [[https://github.com/mcandre/vimrc-mode][vimrc-mode]]
 
