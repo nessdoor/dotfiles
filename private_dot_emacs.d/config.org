@@ -1163,6 +1163,19 @@ Use [[https://github.com/WebFreak001/code-debug][code-debug]] for a native inter
      (projectile-switch-project-action #'projectile-dired)
 #+end_src
 
+**** Caching
+Caching is enabled [[help:projectile-enable-caching][only for the native indexing method]], but the default on all
+OSes except Windows is =alien= (see the [[help:projectile-indexing-method][help page]]). Therefore, caching must be
+enabled manually.
+#+begin_src emacs-lisp :tangle yes
+  (projectile-enable-caching t )
+#+end_src
+
+Also set cache TTL for project files to 60 minutes.
+#+begin_src emacs-lisp :tangle yes
+  (projectile-files-cache-expire (* 60 60))
+#+end_src
+
 **** Keymap
      Use =C-c p= as prefix for all [[https://docs.projectile.mx/projectile/usage.html#interactive-commands][commands]].
 #+begin_src emacs-lisp :tangle yes
