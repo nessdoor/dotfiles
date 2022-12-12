@@ -323,6 +323,10 @@ Emacs).
 #+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
   (add-to-list 'undo-tree-incompatible-major-modes
                'image-mode)
+  (add-to-list 'undo-tree-incompatible-major-modes
+               'archive-mode)
+  (add-to-list 'undo-tree-incompatible-major-modes
+               'pdf-view-mode)
 #+end_src
 
 **** Persistent undo trees
