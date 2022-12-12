@@ -1531,12 +1531,6 @@ Register a debug template for Rust.
   )
 #+end_src
 
-**** v2 post-migration successful flag
-     Signal Roam that the migration from v1 to v2 was successful.
-     #+begin_src emacs-lisp :tangle yes
-       (setq org-roam-v2-ack t)
-     #+end_src
-
 *** Org Roam BibTeX
     [[https://github.com/org-roam/org-roam-bibtex/blob/master/doc/orb-manual.org][Manual]]
 
