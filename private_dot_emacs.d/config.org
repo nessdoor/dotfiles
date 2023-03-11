@@ -860,14 +860,25 @@ Small major mode for editing .gitignore files.
        (add-to-list 'direnv-non-file-modes 'comint-mode))
      #+end_src
 
-*** nix-mode
-    [[https://github.com/NixOS/nix-mode][Repo]]
+*** Nix
 
-    Major mode for editing Nix expressions.
- #+begin_src emacs-lisp :tangle yes
-   (use-package nix-mode
-     :mode "\\.nix\\'")
- #+end_src
+**** nix-mode
+[[https://github.com/NixOS/nix-mode][nix-mode]] is a major mode for editing Nix expressions.
+#+begin_src emacs-lisp :tangle yes
+  (use-package nix-mode
+    :mode "\\.nix\\'")
+#+end_src
+
+**** nixpkgs-fmt
+[[https://github.com/purcell/emacs-nixpkgs-fmt][nixpkgs-fmt.el]] allows us to call [[https://github.com/nix-community/nixpkgs-fmt][nixpkgs-fmt]] on our Nix buffers, giving them a
+formatting suitable for submission to the Nixpkgs repo. These formatting rules
+are good-enough general guidelines for any Nix expression, so we can enable
+automatic formatting upon save for all Nix buffers.
+#+begin_src emacs-lisp :tangle yes
+  (use-package nixpkgs-fmt
+    :hook
+    (nix-mode . 'nixpkgs-fmt-on-save-mode))
+#+end_src
 
 *** LSP
 [[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
