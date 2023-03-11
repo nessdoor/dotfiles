@@ -821,6 +821,14 @@ Small major mode for editing .gitignore files.
       (use-package bazel)
     #+end_src
 
+*** Clojure
+This [[https://clojure.org][Clojure]] setup stands on two packages: [[https://github.com/clojure-emacs/clojure-mode][clojure-mode]] for basic language
+support and [[https://cider.mx/][CIDER]] as the dynamic development environment.
+#+begin_src emacs-lisp :tangle yes
+  (use-package clojure-mode)
+  (use-package cider)
+#+end_src
+
 *** company-nixos-options                                            :BROKEN:
     It's broken for some reason.
     #+begin_src emacs-lisp :tangle no
