@@ -640,6 +640,15 @@ the Clang backend.
     :bind ("C-s" . swiper-isearch))
 #+end_src
 
+*** Status line
+Use [[https://github.com/dbordak/telephone-line][Telephone Line]] as the status line.
+#+begin_src emacs-lisp :tangle yes
+  (use-package telephone-line
+    :ensure t
+    :config
+    (telephone-line-mode 1))
+#+end_src
+
 *** Drag stuff
     [[https://github.com/rejeep/drag-stuff.el][Repo]]
 
@@ -659,23 +668,6 @@ the Clang backend.
      shadowed by drag-stuff. For now, disable it in org-mode.
 #+begin_src emacs-lisp :tangle yes
     (add-to-list 'drag-stuff-except-modes 'org-mode))
-#+end_src
-
-*** Powerline
-    [[https://github.com/milkypostman/powerline][Repo]]
-
-    The Vim [[https://github.com/powerline/powerline][Powerline]] status line, but for Emacs.
- #+begin_src emacs-lisp :tangle yes
-   (use-package powerline
-     :ensure t
-     :demand t
- #+end_src
-
-**** Theme
-     Use the centered theme, with the [[*Evil][Evil]] mode indicator in the middle.
-#+begin_src emacs-lisp :tangle yes
-     :config
-     (powerline-center-evil-theme))
 #+end_src
 
 *** pdf-tools
