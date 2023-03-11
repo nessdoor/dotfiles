@@ -1464,6 +1464,15 @@ Register a debug template for Rust.
       (use-package adoc-mode)
     #+end_src
 
+*** EIN
+[[https://github.com/millejoh/emacs-ipython-notebook][Repo]]
+
+Add support for Jupyter notebooks. This allows to read, edit and run notebooks
+inside an elaborated textual interface.
+#+begin_src emacs-lisp :tangle yes
+  (use-package ein)
+#+end_src
+
 *** org-ref
     [[https://github.com/jkitchin/org-ref][Github page]]
 #+begin_src emacs-lisp :tangle yes
