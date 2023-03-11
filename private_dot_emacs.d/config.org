@@ -755,6 +755,15 @@ Register Emacsclient as the editor for all sub-shells.
   (vterm-exec . with-editor-export-editor)
 #+end_src
 
+*** trashed
+[[https://github.com/shingo256/trashed][Repo]]
+
+A trashcan manager fro Emacs.
+#+begin_src emacs-lisp :tangle yes
+  (use-package trashed
+    :ensure t)
+#+end_src
+
 ** Programming support
    The packages that follow add various features to aid in program
    development.
