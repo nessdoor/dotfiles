@@ -2465,6 +2465,13 @@ properly and avoids the ugly boxes).
   (load conprof-file)
 #+end_src
 
+** Tab bar
+Use [[info:emacs#Tab Bars][tabs]] to organize frames, which are a little more intuitive and handy in
+terminal Emacs, since frames are not explicitly represented by the UI, there.
+#+begin_src emacs-lisp :tangle yes
+  (tab-bar-mode)
+#+end_src
+
 ** vc
 Shorten the list of version control systems to look for when accessing
 directories. It should speed up remote access a little.
