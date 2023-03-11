@@ -74,6 +74,14 @@ found in this [[https://stackoverflow.com/a/29757750/13140497][Stack Overflow an
   (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
 #+end_src
 
+*** Activate tabs for indentation
+Sometimes, tabs are necessary for indentation, whether because some legacy code
+uses them, or [[*Smart tabs][smart tabbing]] is active.
+#+begin_src emacs-lisp :tangle yes
+  (defun tal/tabs-on ()
+    (setq indent-tabs-mode t))
+#+end_src
+
 * Customize
 ** Customize plug-in point
     Set the path where M-x customize saves its settings, and load from it.
@@ -1820,7 +1828,7 @@ An interface to rTorrent.
    line numbers, etc.
 
 *** Tabs
-    Always insert spaces instead of tabs.
+    Always insert spaces instead of tabs, unless told otherwise.
 #+begin_src emacs-lisp :tangle yes
   (setq-default indent-tabs-mode nil)
 #+end_src
@@ -1828,6 +1836,33 @@ An interface to rTorrent.
 #+begin_src emacs-lisp :tangle yes
   (setq c-basic-offset 4)
   (setq tab-width 4)
+#+end_src
+
+**** Smart tabs
+[[https://www.emacswiki.org/emacs/SmartTabs][Wiki article]]
+
+Use tabs for indentation and spaces for alignment in supported modes.
+#+begin_src emacs-lisp :tangle yes :noweb no-export
+  (use-package smart-tabs-mode
+    :ensure t
+    :hook
+    <<tabs-on-hook>>
+    :config
+    <<smtb-config>>)
+#+end_src
+
+***** Auto-activation
+smart-tabs-mode only works when ~indent-tabs-mode~ is non-~nil~. Since we
+disabled tabs globally, these must be selectively reactivated wherever smart
+tabbing is supported (i.e., wherever it has been insinuated):
+#+begin_src emacs-lisp :tangle no :noweb-ref smtb-config
+  (smart-tabs-insinuate 'c)
+#+end_src
+
+The function that activates tabs is [[*Activate tabs for indentation][very simple]], and we can register it with the
+hooks for the selected modes:
+#+begin_src emacs-lisp :tangle no :noweb-ref tabs-on-hook
+  (c-mode-common . tal/tabs-on)
 #+end_src
 
 *** Parentheses
