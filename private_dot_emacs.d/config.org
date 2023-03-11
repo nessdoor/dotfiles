@@ -2156,10 +2156,6 @@ incremental search among all fields.
       #+begin_src emacs-lisp :tangle yes
           (gnuplot . t)
       #+end_src
-    - GNU Screen
-      #+begin_src emacs-lisp :tangle yes
-          (screen . t)
-      #+end_src
     - LaTeX
       #+begin_src emacs-lisp :tangle yes
           (latex . t)
@@ -2176,6 +2172,25 @@ incremental search among all fields.
       #+begin_src emacs-lisp :tangle yes
           (shell . t)))
       #+end_src
+
+**** GNU Screen
+[[https://orgmode.org/worg/org-contrib/babel/languages/ob-doc-screen.html][Screen interaction]] through Babel is... funny, as it uses a full-blown terminal
+emulator and interacts with it.
+#+begin_src emacs-lisp :tangle no :noweb-ref babel-language
+  (screen . t)
+#+end_src
+
+Since I don't use Xterm but [[https://codeberg.org/dnkl/foot][Foot]], we must customize the default header arguments
+for this type of source blocks, so that it uses this terminal emulator. While at
+it, let's also set the shell to Bash.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-babel-default-header-args:screen
+        '((:results . "silent")
+          (:session . "default")
+          (:cmd . "bash")
+          (:terminal . "foot")
+          (:screenrc . "/dev/null")))
+#+end_src
 
 *** LaTeX
 
