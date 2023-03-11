@@ -105,6 +105,17 @@ uses them, or [[*Smart tabs][smart tabbing]] is active.
    The following packages bring general-purpouse enhancements to the
    entirety of Emacs.
 
+*** Age
+[[https://github.com/anticomputer/age.el][Repo]]
+
+Allow Emacs to operate on [[https://github.com/FiloSottile/age][Age]]-encrypted files.
+#+begin_src emacs-lisp :tangle yes
+  (use-package age
+    :ensure t
+    :config
+    (age-file-enable))
+#+end_src
+
 *** Native complete
     [[https://github.com/CeleritasCelery/emacs-native-shell-complete][Repo]]
 
