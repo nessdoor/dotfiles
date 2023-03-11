@@ -818,8 +818,7 @@ Small major mode for editing .gitignore files.
 
     Syntax, formatting and build support for Bazel projects.
     #+begin_src emacs-lisp :tangle yes
-      (use-package bazel
-        :load-path "manual-packages/emacs-bazel-mode")
+      (use-package bazel)
     #+end_src
 
 *** company-nixos-options                                            :BROKEN:
