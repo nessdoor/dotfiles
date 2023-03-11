@@ -1242,9 +1242,9 @@ Use [[https://github.com/WebFreak001/code-debug][code-debug]] for a native inter
 #+end_src
 
 **** Caching
-Caching is enabled [[help:projectile-enable-caching][only for the native indexing method]], but the default on all
-OSes except Windows is =alien= (see the [[help:projectile-indexing-method][help page]]). Therefore, caching must be
-enabled manually.
+Project file caching is enabled [[help:projectile-enable-caching][only for the native indexing method]], but the
+default on all OSes except Windows is =alien= (see the [[help:projectile-indexing-method][help page]]). Therefore,
+caching must be enabled manually.
 #+begin_src emacs-lisp :tangle yes
   (projectile-enable-caching t )
 #+end_src
@@ -1252,6 +1252,14 @@ enabled manually.
 Also set cache TTL for project files to 60 minutes.
 #+begin_src emacs-lisp :tangle yes
   (projectile-files-cache-expire (* 60 60))
+#+end_src
+
+Another cache is the "file exists cache", which is heavily used when checking
+for the existence of project-identifying files (e.g. =.projectile=, =.git=,
+...). It is useful to extend the lifetime of this cache for remote projects
+(here, up to 1 hour):
+#+begin_src emacs-lisp :tangle yes
+  (projectile-file-exists-remote-cache-expire (* 60 60))
 #+end_src
 
 **** Keymap
