@@ -2297,6 +2297,37 @@ properly and avoids the ugly boxes).
   (add-hook 'org-mode-hook 'auto-fill-mode)
 #+end_src
 
+*** org-contrib
+The [[https://orgmode.org/worg/org-contrib/][org-contrib]] repo provides some utilities that can be used to further enhance
+the Org experience. The software contained in this repo has either been
+abandoned, it is sporadically maintained or it is simply too small to live
+somewhere else.
+#+begin_src emacs-lisp :tangle yes :noweb no-export
+  (use-package org-contrib
+    :ensure t
+    :config
+    <<org-contrib-config>>)
+#+end_src
+
+**** ox-extras
+Utility functions for the Org exporter. These must be loaded through an ad-hoc
+mechanism.
+#+begin_src emacs-lisp :tangle no :noweb no-export :noweb-ref org-contrib-config
+  (require 'ox-extra)
+  (ox-extras-activate
+   '(
+     <<ox-extras>>))
+#+end_src
+
+***** ignore-headlines
+Allows the exporter to ignore a headline without ignoring its contents. Useful
+for keeping, for example, in-line LaTeX directives stowed away in their own
+sections. In order to ignore a heading, this must be marked with the tag
+=:ignore:=.
+#+begin_src emacs-lisp :tangle no :noweb-ref ox-extras
+  ignore-headlines
+#+end_src
+
 ** Shells
 
 *** Show working dir when launching commands
