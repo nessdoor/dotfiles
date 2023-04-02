@@ -171,15 +171,6 @@ Allow Emacs to operate on [[https://github.com/FiloSottile/age][Age]]-encrypted 
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'tar-mode 'motion)
         #+end_src
-      - LSP session browser
-        #+begin_src emacs-lisp :tangle yes
-          (evil-set-initial-state 'lsp-browser-mode 'motion)
-        #+end_src
-      - LSP UI Imenu
-        #+begin_src emacs-lisp :tangle yes
-          (evil-set-initial-state 'lsp-ui-imenu-mode 'motion)
-        #+end_src
-
       - IBuffer
         #+begin_src emacs-lisp :tangle yes
           (evil-set-initial-state 'ibuffer-mode 'motion)
@@ -890,205 +881,28 @@ automatic formatting upon save for all Nix buffers.
 #+end_src
 
 *** LSP
-[[https://emacs-lsp.github.io/lsp-mode/][Project homepage]]
-   
-Load lsp-mode.
+Use [[https://joaotavora.github.io/eglot/][Eglot]] as the LSP client for Emacs.
 #+begin_src emacs-lisp :tangle yes :noweb no-export
-  (use-package lsp-mode
-    :init
-    <<lsp-init>>
+  (use-package eglot
     :custom
-    <<lsp-custom>>
+    <<eglot-var>>
     :config
-    <<lsp-config>>
-    :bind
-    <<lsp-global-bind>>
-    (:map lsp-command-map
-          <<lsp-map-bind>>
-          )
-    :hook
-    (c-mode . lsp-deferred)
-    (python-mode . lsp-deferred)
-    (scala-mode . lsp-deferred)
-    (nix-mode . lsp-deferred)
-    (haskell-mode . lsp-deferred)
-    (haskell-literate-mode . lsp-deferred)
-    <<lsp-language-mode-hook>>
-    <<lsp-hook>>
-    :commands lsp lsp-deferred)
+    <<eglot-conf>>)
 #+end_src
 
-**** Change command prefix
-Change the prefix of LSP commands from =s-l= to =C-c l=.
-
-Now, this is trickier than one could imagine. Placing the following under the
-~:init~ property works, *unless* you're byte-compiling your startup file.
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-init
-  (setq lsp-keymap-prefix "C-c l")
+**** Connection management
+Do not reopen connections automatically to avoid inconveniences with remote
+connections (e.g. when you suspend your laptop while connected to the Internet
+and resume it on a train).
+#+begin_src emacs-lisp :tangle no :noweb-ref eglot-var
+  (eglot-autoreconnect nil)
 #+end_src
-
-In order to make it work even when compiling, we must register the prefix with
-the map directly, as indicated in [[https://github.com/emacs-lsp/lsp-mode/issues/1672#issuecomment-626277665][this Github comment]].
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-config
-  (define-key lsp-mode-map (kbd "C-c l") lsp-command-map)
+Close connections automatically when all project buffers are gone. Usually, if I
+want to continue working on a project in the near future, I leave its buffers
+open.
+#+begin_src emacs-lisp :tangle no :noweb-ref eglot-var
+  (eglot-autoshutdown t)
 #+end_src
-
-Now, I know that we shouldn't be too demanding, but the [[https://github.com/emacs-lsp/lsp-mode/issues/1672][issue]] has been known for
-quite some time and, like with other small annoying problems (for example, the
-unclean termination of remote sessions, or remote sessions hanging on startup
-unless ~lsp-log-io~ is set to ~t~,...), the maintainers didn't show much
-interest in solving it.
-
-**** Performance settings
-According to [[https://emacs-lsp.github.io/lsp-mode/page/performance/][official sources]] and the output of [[help:lsp-doctor][the doctor]], these settings make
-LSP performance decent.
-
-- Increase GC threshold to 100MB
-- Increase the maximum amount of read data from a remote process to 1MiB
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-config
-  (setq gc-cons-threshold 100000000)
-  (setq read-process-output-max (* 1024 1024))
-#+end_src
-
-**** Lenses
-Activate code lenses when in an LSP-serviced buffer.
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-hook
-  (lsp-mode . lsp-lens-mode)
-#+end_src
-
-**** Extras
-***** LSP UI
-[[https://emacs-lsp.github.io/lsp-ui/][Homepage]]
-
-Show documentation and [[https://www.flycheck.org/en/latest/index.html][Flycheck]] errors on overlays.
-#+begin_src emacs-lisp :tangle yes :noweb no-export
-  (use-package lsp-ui
-    :after lsp-mode
-    :commands lsp-ui-mode
-    :custom
-    <<lsp-ui-custom>>
-    :bind
-    <<lsp-ui-bind>>
-   )
-#+end_src
-
-****** Sideline
-Show the hover on the sideline.
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-custom
-  (lsp-ui-sideline-show-hover t)
-#+end_src
-
-****** Imenu
-
-******* Auto-refresh
-Auto-refresh Imenu.
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-custom
-  (lsp-ui-imenu-auto-refresh t)
-#+end_src
-
-***** Binding
-Bring up the Imenu sidebar with =C-c l g m=.
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-ui-bind
-  (:map lsp-command-map ("g m" . lsp-ui-imenu))
-#+end_src
-
-**** Integrations
-***** Helm
-      [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]] provides an Helm interface for symbol querying on a
-      project.
-#+begin_src emacs-lisp :tangle yes
-  (use-package helm-lsp
-    :after lsp-mode
-    :commands helm-lsp-workspace-symbol
-#+end_src
-
-****** Bindings
-      Replace standard Xref apropos search with [[https://github.com/emacs-lsp/helm-lsp][helm-lsp]].
-#+begin_src emacs-lisp :tangle yes
-    :bind
-    (:map lsp-mode-map
-          ([remap xref-find-apropos] . helm-lsp-workspace-symbol)))
-#+end_src
-
-***** Treemacs
-      [[https://github.com/emacs-lsp/lsp-treemacs][lsp-treemacs]] synchronizes [[*Treemacs][Treemacs]] projects and LSP workspaces.
-#+begin_src emacs-lisp :tangle yes
-  (use-package lsp-treemacs
-    :after lsp-mode
-    :commands lsp-treemacs-errors-list
-    :config
-    (lsp-treemacs-sync-mode 1))
-#+end_src
-
-**** Language servers
-***** C (CCLS)
-      [[https://github.com/MaskRay/ccls][CCLS]] is a language server for C, C++ and Objective-C. It must be
-      available on the PATH, since it is an external binary.
-
-      Emacs can connect to CCLS as an LSP client via [[https://github.com/MaskRay/emacs-ccls][emacs-ccls]].
-#+begin_src emacs-lisp :tangle yes
-  (use-package ccls
-    :after lsp-mode
-    :hook ((c-mode c++-mode objc-mode) . (lambda ()
-                                           (require 'ccls))))
-#+end_src
-
-***** C (remote) (clangd)
-      Use [[https://clangd.llvm.org/][clangd]] as a remote C language server, since it is pretty
-      easy to find it preinstalled on remote development machines.
-#+begin_src emacs-lisp :tangle yes
-  (with-eval-after-load 'lsp-mode
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-tramp-connection "clangd")
-                      :major-modes '(c-mode)
-                      :remote? t
-                      :server-id 'clangd-remote)))
-#+end_src
-
-***** Python (remote) (pylsp)
-      Use [[https://github.com/python-lsp/python-lsp-server][python-lsp]] instance as a remote Python language server.
-#+begin_src emacs-lisp :tangle yes
-  (with-eval-after-load 'lsp-mode
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-tramp-connection "pylsp")
-                      :major-modes '(python-mode)
-                      :remote? t
-                      :server-id 'pylsp-remote)))
-#+end_src
-
-***** Scala
-      Support Scala via [[https://scalameta.org/metals/][Metals]].
-#+begin_src emacs-lisp :tangle yes
-  (use-package lsp-metals
-    :after (scala-mode sbt-mode lsp-mode)
-    :config
-    (setq lsp-metals-treeview-show-when-views-received t))
-#+end_src
-
-***** Nix
-      Use [[https://github.com/nix-community/rnix-lsp][rnix-lsp]] for syntax checking.
-#+begin_src emacs-lisp :tangle yes
-  (with-eval-after-load 'lsp-mode
-    (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
-    (lsp-register-client
-     (make-lsp-client :new-connection (lsp-stdio-connection "rnix-lsp")
-		      :major-modes '(nix-mode)
-		      :server-id 'nix)))
-#+end_src
-
-***** Haskell
-      [[https://emacs-lsp.github.io/lsp-haskell/][Official instructions]]
-      #+begin_src emacs-lisp :tangle yes
-        (use-package lsp-haskell
-          :after lsp-mode)
-      #+end_src
-
-***** Java
-      #+begin_src emacs-lisp :tangle yes
-        (use-package lsp-java
-          :after lsp-mode
-          :hook (java-mode . lsp))
-      #+end_src
 
 *** DAP
     [[https://emacs-lsp.github.io/dap-mode/][Homepage]]
@@ -1286,17 +1100,6 @@ Loosely based on [[https://robert.kra.hn/posts/rust-emacs-setup/][Robert Krahn's
 Always run =rustfmt= before saving.
 #+begin_src emacs-lisp :tangle no :noweb-ref rustic-custom
   (rustic-format-trigger 'on-save)
-#+end_src
-
-**** LSP
-Activate LSP in [[*Rustic][rustic-mode]] buffers.
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-language-mode-hook
-  (rustic-mode . lsp-deferred)
-#+end_src
-
-Use [[https://github.com/rust-lang/rust-clippy][Clippy]] as the checker.
-#+begin_src emacs-lisp :tangle no :noweb-ref lsp-custom
-  (lsp-rust-analyzer-cargo-watch-command "clippy")
 #+end_src
 
 **** DAP
