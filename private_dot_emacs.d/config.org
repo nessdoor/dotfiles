@@ -825,7 +825,8 @@ Small major mode for editing .gitignore files.
 This [[https://clojure.org][Clojure]] setup stands on two packages: [[https://github.com/clojure-emacs/clojure-mode][clojure-mode]] for basic language
 support and [[https://cider.mx/][CIDER]] as the dynamic development environment.
 #+begin_src emacs-lisp :tangle yes
-  (use-package clojure-mode)
+  (use-package clojure-mode
+    :hook (clojure-mode . hs-minor-mode))
   (use-package cider)
 #+end_src
 
@@ -1352,6 +1353,14 @@ Register a debug template for Rust.
      #+begin_src emacs-lisp :tangle yes
        :custom (ttl-indent-on-idle-timer nil))
      #+end_src
+
+*** paredit
+Parentheses-based structural editing.
+#+begin_src emacs-lisp :tangle yes
+  (use-package paredit
+    :ensure t
+    :hook (clojure-mode . paredit-mode))
+#+end_src
 
 *** Magit
     [[https://magit.vc/][Homepage]]
