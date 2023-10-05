@@ -974,9 +974,11 @@ open.
 
 *** Projectile
     Enable [[https://projectile.mx/][Projectile]] for managing any programming project directory.
- #+begin_src emacs-lisp :tangle yes
+ #+begin_src emacs-lisp :tangle yes :noweb no-export
    (use-package projectile
      :hook (prog-mode . projectile-mode)
+     :config
+     <<projectile-config>>
  #+end_src
 
 **** Manual delighting
@@ -1032,6 +1034,19 @@ for the existence of project-identifying files (e.g. =.projectile=, =.git=,
      :bind
      (:map projectile-mode-map
            ("C-c p" . projectile-command-map)))
+#+end_src
+
+**** Disable over TRAMP
+Projectile continuously checks dominant files for those files that define a
+project (e.g. version control directories). This is fine on local directories,
+but becomes terrible when remote directories are involved. Disable this check
+over remote systems.
+#+begin_src emacs-lisp :tangle yes
+  (defun currently-remote (&rest a)
+    (file-remote-p default-directory))
+#+end_src
+#+begin_src emacs-lisp :tangle no :noweb-ref projectile-config
+  (advice-add 'projectile-project-root :before-until #'currently-remote)
 #+end_src
 
 *** Rust
