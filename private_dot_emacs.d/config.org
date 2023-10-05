@@ -1049,6 +1049,15 @@ over remote systems.
   (advice-add 'projectile-project-root :before-until #'currently-remote)
 #+end_src
 
+*** Colored parentheses
+When editing heavily parenthesized code, it is useful to have matching
+parentheses be colored differently.
+#+begin_src emacs-lisp :tangle yes
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook (lisp-mode clojure-mode))
+#+end_src
+
 *** Rust
 Loosely based on [[https://robert.kra.hn/posts/rust-emacs-setup/][Robert Krahn's setup]].
 
