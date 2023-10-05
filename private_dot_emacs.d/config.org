@@ -1878,6 +1878,15 @@ incremental search among all fields.
      (setq auto-revert-remote-files t)
    #+end_src
 
+** Man
+Make auto-completion available to [[help:man][man]], like they are available for [[help:woman][woman]].
+#+begin_src emacs-lisp :tangle yes
+  (defadvice man (before man-autocomplete activate)
+    (interactive (progn
+                   (require 'woman)
+                   (list (woman-file-name nil)))))
+#+end_src
+
 ** Org
    Everything Org.
 
