@@ -867,8 +867,9 @@ are good-enough general guidelines for any Nix expression, so we can enable
 automatic formatting upon save for all Nix buffers.
 #+begin_src emacs-lisp :tangle yes
   (use-package nixpkgs-fmt
+    :commands (nixpkgs-fmt-buffer nixpkgs-fmt-region)
     :hook
-    (nix-mode . 'nixpkgs-fmt-on-save-mode))
+    (nix-mode . nixpkgs-fmt-on-save-mode))
 #+end_src
 
 *** LSP
