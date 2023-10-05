@@ -1892,16 +1892,6 @@ incremental search among all fields.
           (default . t)))
 #+end_src
 
-*** Links
-    By default, capturing links inside Org buffers generates =<file>:<heading>=
-    type links, ignoring any ID that could have been assigned to the
-    heading. Make it so that, if an ID is available, that is used for linking.
-    #+begin_src emacs-lisp :tangle yes
-      (setq org-id-link-to-org-use-id 'use-existing)
-    #+end_src
-
-    This also plays nice with [[*Roam][Org Roam]], which uses Org IDs.
-
 *** Babel
     Enable evaluation of additional languages by loading the appropriate modules
     (refer to the basic table in [[info:org#Languages][the Info page]] and the extended tables on the
@@ -1963,6 +1953,29 @@ it, let's also set the shell to Bash.
           (:terminal . "foot")
           (:screenrc . "/dev/null")))
 #+end_src
+
+*** Links
+
+**** Following links
+Org can follow a variety of links, sometimes using external applications for
+displaying the linked content.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-file-apps
+        '((auto-mode . emacs)
+          (directory . emacs)
+          ("\\.mm\\'" . default)
+          ("\\.x?html?\\'" . default)))
+#+end_src
+
+**** Store by ID whenever possible
+By default, capturing links inside Org buffers generates =<file>:<heading>=
+type links, ignoring any ID that could have been assigned to the
+heading. Make it so that, if an ID is available, that is used for linking.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-id-link-to-org-use-id 'use-existing)
+#+end_src
+
+This also plays nice with [[*Roam][Org Roam]], which uses Org IDs.
 
 *** LaTeX
 
