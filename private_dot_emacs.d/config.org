@@ -2048,6 +2048,14 @@ properly and avoids the ugly boxes).
        (setq org-use-sub-superscripts '{})
      #+end_src
 
+*** Exporting
+
+**** Markdown
+Enable exporting to Markdown files.
+#+begin_src emacs-lisp :tangle yes
+  (require 'ox-md)
+#+end_src
+
 *** Key binds
 **** org-capture
      Bind =C-c r= to quickly capture stuff.
