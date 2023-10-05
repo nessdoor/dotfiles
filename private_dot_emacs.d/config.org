@@ -1,6 +1,5 @@
 -*- eval: (display-line-numbers-mode); -*-
-#+STARTUP: overview
-#+STARTUP: hidestars
+#+STARTUP: overview hidestars
 #+TAGS: TEMPORARY(t) BROKEN(b) DISABLED(d)
 
 * Package management
@@ -710,7 +709,7 @@ Interface to =du= via Dired.
 #+end_src
 
 *** Iedit
-    [[https://github.com/victorhge/iedit][Iedit]] allows to edit matched text in a parallel way.
+    [[https://github.com/victorhge/iedit][Iedit]] allows to edit matched text in parallel.
 #+begin_src emacs-lisp :tangle yes
   (use-package iedit :ensure t)
 #+end_src
@@ -763,15 +762,6 @@ Register Emacsclient as the editor for all sub-shells.
   (vterm-exec . with-editor-export-editor)
 #+end_src
 
-*** trashed
-[[https://github.com/shingo256/trashed][Repo]]
-
-A trashcan manager fro Emacs.
-#+begin_src emacs-lisp :tangle yes
-  (use-package trashed
-    :ensure t)
-#+end_src
-
 ** Programming support
    The packages that follow add various features to aid in program
    development.
@@ -817,7 +807,8 @@ This [[https://clojure.org][Clojure]] setup stands on two packages: [[https://gi
 support and [[https://cider.mx/][CIDER]] as the dynamic development environment.
 #+begin_src emacs-lisp :tangle yes
   (use-package clojure-mode
-    :hook (clojure-mode . hs-minor-mode))
+    :hook
+    (clojure-mode . hs-minor-mode))
   (use-package cider)
 #+end_src
 
@@ -1625,6 +1616,15 @@ An interface to rTorrent.
   (use-package mentor)
 #+end_src
 
+*** trashed
+[[https://github.com/shingo256/trashed][Repo]]
+
+A trashcan manager fro Emacs.
+#+begin_src emacs-lisp :tangle yes
+  (use-package trashed
+    :ensure t)
+#+end_src
+
 * Emacs options
   What follow are all the configuration options for core
   Emacs. Anything that is not package-related is configured here.
@@ -1727,10 +1727,10 @@ Enable Flyspell for both textual and programming modes.
    convenient to use the GTK GUI.
 
 *** Hide toolbar
-    Takes too much space and I never use it.
-    #+begin_src emacs-lisp :tangle yes
-      (tool-bar-mode -1)
-    #+end_src
+Takes too much space and I never use it.
+#+begin_src emacs-lisp :tangle yes
+  (tool-bar-mode -1)
+#+end_src
 
 ** Dired
 
@@ -2278,7 +2278,7 @@ sections. In order to ignore a heading, this must be marked with the tag
 **** Profile definitions
 
 ***** local-bin
-      Include ~/.local/bin in PATH
+Include ~/.local/bin in PATH
 #+begin_src emacs-lisp :tangle yes
   (connection-local-set-profile-variables
    'local-bin
