@@ -1126,7 +1126,7 @@ Parentheses-based structural editing.
 #+begin_src emacs-lisp :tangle yes
   (use-package paredit
     :ensure t
-    :hook (clojure-mode . paredit-mode))
+    :hook (lisp-mode clojure-mode))
 #+end_src
 
 *** Magit
