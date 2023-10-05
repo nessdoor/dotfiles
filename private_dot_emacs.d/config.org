@@ -2137,6 +2137,11 @@ sections. In order to ignore a heading, this must be marked with the tag
 #+end_src
 
 ** Shells
+Here, we try to configure all the kinds of shells that Emacs can host.
+#+begin_src emacs-lisp :tangle yes
+  (eval-when-compile
+    (require 'esh-mode))
+#+end_src
 
 *** Show working dir when launching commands
     When launching commands via =M-!= or =M-&=, the CWD is not
@@ -2188,15 +2193,18 @@ sections. In order to ignore a heading, this must be marked with the tag
 #+end_src
 
 *** No duplicates in history
-    Don't accumulate successive identical commands on the input ring.
+Don't accumulate successive identical commands on the input ring.
 #+begin_src emacs-lisp :tangle yes
   (setq comint-input-ignoredups t)
+  (setq eshell-hist-ignoredups t)
 #+end_src
 
 *** Buffer truncation
-    Truncate buffer to [[help:comint-buffer-maximum-size][comint-buffer-maximum-size]].
+Truncate all shell buffers to a maximum of 1024 lines (as per default values of
+[[help:comint-buffer-maximum-size][comint-buffer-maximum-size]] and [[help:eshell-buffer-maximum-lines][eshell-buffer-maximum-lines]]).
 #+begin_src emacs-lisp :tangle yes
   (add-to-list 'comint-output-filter-functions 'comint-truncate-buffer)
+  (add-to-list 'eshell-output-filter-functions 'eshell-truncate-buffer)
 #+end_src
 
 *** Autocompletion slowdown on remote shells
@@ -2209,6 +2217,28 @@ sections. In order to ignore a heading, this must be marked with the tag
               (when (and (fboundp 'company-mode)
                          (file-remote-p default-directory))
                 (company-mode -1))))
+#+end_src
+
+*** Eshell
+Customization for [[info:eshell#Top][Eshell]], the Emacs shell.
+
+**** Key rebinding
+Use the classical keybindings common to other shells (like Bash) while point is
+after the prompt.
+#+begin_src emacs-lisp :tangle yes
+  (add-to-list 'eshell-modules-list 'eshell-rebind)
+#+end_src
+
+**** Electric forward slash
+Automatically insert TRAMP prefixes when supplying absolute paths.
+#+begin_src emacs-lisp :tangle yes
+  (add-to-list 'eshell-modules-list 'eshell-elecslash)
+#+end_src
+
+**** Use TRAMP su/sudo
+Use the built-in TRAMP methods for running commands as other users.
+#+begin_src emacs-lisp :tangle yes
+  (add-to-list 'eshell-modules-list 'eshell-tramp)
 #+end_src
 
 ** TRAMP
