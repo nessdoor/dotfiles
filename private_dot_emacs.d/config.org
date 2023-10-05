@@ -2361,6 +2361,20 @@ Include ~/.local/bin in PATH
    `((tramp-remote-path . ("~/.local/bin" . ,tramp-remote-path))))
 #+end_src
 
+***** nixos-wrappers
+NixOS places certain binaries (like setuid binaries) in a special directory
+created at runtime called =/run/wrappers/bin=. Unfortunately, ~getconf PATH~
+returns a PATH that does not contain this directory, preventing these binaries
+from being used on remote hosts.
+
+Create a profile that adds this directory back to PATH, while waiting for an
+official solution upstream.
+#+begin_src emacs-lisp :tangle yes
+  (connection-local-set-profile-variables
+   'nixos-wrappers
+   `((tramp-remote-path . ("/run/wrappers/bin" . ,tramp-remote-path))))
+#+end_src
+
 **** Profile associations
 #+begin_src emacs-lisp :tangle yes
   (setq conprof-file (expand-file-name "conprof-assoc.el" user-emacs-directory))
