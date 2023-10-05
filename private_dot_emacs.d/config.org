@@ -1429,7 +1429,7 @@ Teach Flycheck how to validate PlantUML buffers.
     available in any buffer.
 #+begin_src emacs-lisp :tangle yes
   :hook
-  (after-init . org-roam-setup)
+  (after-init . org-roam-db-autosync-enable)
 #+end_src
 
 **** Roam directory
