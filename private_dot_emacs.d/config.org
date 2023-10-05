@@ -904,48 +904,6 @@ open.
   (eglot-autoshutdown t)
 #+end_src
 
-*** DAP
-    [[https://emacs-lsp.github.io/dap-mode/][Homepage]]
-
-    Enable support for connecting to [[https://microsoft.github.io/debug-adapter-protocol/][Debug Adapter Protocol]]-enabled backends.
-    #+begin_src emacs-lisp :tangle yes :noweb no-export
-      (use-package dap-mode
-        :config
-        (dap-auto-configure-mode)
-        <<dap-template>>
-    #+end_src
-
-**** Language support
-
-***** Python
-      Python support depends on [[https://github.com/microsoft/debugpy/][debugpy]] being installed and [[file:elpa/dap-mode-20211117.1555/dap-python.el::;;; dap-python.el --- Debug Adapter Protocol mode for Python -*- lexical-binding: t; -*-][dap-python]] being
-      loaded.
-      #+begin_src emacs-lisp :tangle yes
-        (require 'dap-python)
-        (setq dap-python-debugger 'debugpy) ; Necessary until they default it
-      #+end_src
-
-***** LLDB
-Load the adapter for all languages supporting LLDB.
-#+begin_src emacs-lisp :tangle yes
-  (require 'dap-lldb)
-#+end_src
-
-***** Native debug
-Use [[https://github.com/WebFreak001/code-debug][code-debug]] for a native interface to GDB and LLDB (necessary for some languages).
-#+begin_src emacs-lisp :tangle yes
-  (require 'dap-gdb-lldb)
-  (dap-gdb-lldb-setup)
-#+end_src
-
-**** Automatic hydra
-     Since dap-mode comes with an integrated command hydra, follow the official
-     recommendations and make it appear automatically when hitting a breakpoint.
-     #+begin_src emacs-lisp :tangle yes
-       (add-hook 'dap-stopped-hook
-                 (lambda (arg) (call-interactively #'dap-hydra))))
-     #+end_src
-
 *** ESS
     Enable [[https://ess.r-project.org][Emacs Speaks Statistics]] for awesome statistical aids that
     i'll never use again.
