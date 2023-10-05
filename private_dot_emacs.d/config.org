@@ -22,14 +22,8 @@
 #+end_src
 
 ** use-package
-   Ensure that [[https://github.com/jwiegley/use-package][use-package]] is installed.
-#+begin_src emacs-lisp :tangle yes
-  (when (not (package-installed-p 'use-package))
-    (package-refresh-contents)
-    (package-install 'use-package))
-#+end_src
-   And make absolutely sure that it is evaluated, even if this file
-   gets compiled (read the [[help:eval-when-compile][manual page]] for more information).
+Make absolutely sure that [[https://github.com/jwiegley/use-package][use-package]] is evaluated, even if this file
+gets compiled (read the [[help:eval-when-compile][manual page]] for more information).
 #+begin_src emacs-lisp :tangle yes
   (eval-when-compile
     (require 'use-package))
@@ -1523,7 +1517,7 @@ Teach Flycheck how to validate PlantUML buffers.
      prompt for creation when records are not found. Plus, when called
      with a prefix, try to update name and mail.
      #+begin_src emacs-lisp :tangle yes
-       (setq bbdb-mua-update-interactive-p '(query . update))
+       (setq bbdb-mua-interactive-action '(query . update))
      #+end_src
 
      Finally, make BBDB look at all addresses contained in a message.
@@ -1747,9 +1741,13 @@ Enable Flyspell for both textual and programming modes.
 #+end_src
 
 ** GUI
-   Although I mainly use the terminal mode (because (1) I want a semi-transparent
-   background with no hassle and (2) I like pseudo-GUIs), sometimes it is
-   convenient to use the GTK GUI.
+
+*** Transparency
+Since Emacs 29, we can have transparent frames. Enable it by default for all
+created frames.
+#+begin_src emacs-lisp :tangle yes
+  (add-to-list 'default-frame-alist '(alpha-background . 75))
+#+end_src
 
 *** Hide toolbar
 Takes too much space and I never use it.
@@ -1913,7 +1911,7 @@ Make auto-completion available to [[help:man][man]], like they are available for
      - delete only visibe text
      - show the edited point
 #+begin_src emacs-lisp :tangle yes
-  (setq org-catch-invisible-edits 'smart)
+  (setq org-fold-catch-invisible-edits 'smart)
 #+end_src
 
 **** Line splitting policy
@@ -2056,7 +2054,7 @@ Use the ~listings~ package to export source code.
   (require 'ox-latex)
   (add-to-list 'org-latex-packages-alist '("" "listings"))
   (add-to-list 'org-latex-packages-alist '("" "color"))
-  (setq org-latex-listings 'listings)
+  (setq org-latex-src-block-backend 'listings)
 #+end_src
 
 **** Hyperref
@@ -2433,28 +2431,28 @@ directories. It should speed up remote access a little.
 ***** Top-level group hydra
       Use =y= in the =*Group*= buffer to trigger this hydra.
       #+begin_src emacs-lisp :tangle yes
-           (defhydra hydra-gnus-group (:color blue)
-             "
-[_A_] Remote groups (A A) [_g_] Refresh
-[_L_] Local groups        [_\\^_] List servers
-[_U_] (Un)subscribe       [_u_] Unsubscribe at point
-[_c_] Mark all read       [_m_] Compose new mail
-[_G_] Search mails (G G)  [_#_] Mark mail
-[_T_] Topics...
-"
-             ("A" gnus-group-list-active)
-             ("L" gnus-group-list-all-groups)
-             ("U" gnus-group-unsubscribe-group)
-             ("u" gnus-group-unsubscribe-current-group)
-             ("c" gnus-topic-catchup-articles)
-             ("G" dianyou-group-make-nnir-group)
-             ("g" gnus-group-get-new-news)
-             ("^" gnus-group-enter-server-mode)
-             ("m" gnus-group-new-mail)
-             ("#" gnus-topic-mark-topic)
-             ("T" hydra-gnus-group-topic/body)
-             ("q" nil))
-           (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
+                   (defhydra hydra-gnus-group (:color blue)
+                     "
+        [_A_] Remote groups (A A) [_g_] Refresh
+        [_L_] Local groups        [_\\^_] List servers
+        [_U_] (Un)subscribe       [_u_] Unsubscribe at point
+        [_c_] Mark all read       [_m_] Compose new mail
+        [_G_] Search mails (G G)  [_#_] Mark mail
+        [_T_] Topics...
+        "
+                     ("A" gnus-group-list-active)
+                     ("L" gnus-group-list-all-groups)
+                     ("U" gnus-group-toggle-subscription)
+                     ("u" gnus-group-toggle-subscription-at-point)
+                     ("c" gnus-topic-catchup-articles)
+                     ("G" dianyou-group-make-nnir-group)
+                     ("g" gnus-group-get-new-news)
+                     ("^" gnus-group-enter-server-mode)
+                     ("m" gnus-group-new-mail)
+                     ("#" gnus-topic-mark-topic)
+                     ("T" hydra-gnus-group-topic/body)
+                     ("q" nil))
+                   (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
       #+end_src
 
 **** Summary buffer
