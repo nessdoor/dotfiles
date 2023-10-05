@@ -1288,59 +1288,61 @@ inside an elaborated textual interface.
 
 *** org-ref
     [[https://github.com/jkitchin/org-ref][Github page]]
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes :noweb no-export
   (use-package org-ref
-    :after (org reftex helm-bibtex)
+    :after (org reftex bibtex-completion)
     :custom
+    <<org-ref-custom>>
+    :config
+    <<org-ref-config>>)
 #+end_src
 
-**** Directory settings
-     Set the directories for org-ref:
-     - the notes file
-     - the location of the default bib database
-     - the PDF directory containing the retrieved documents
-#+begin_src emacs-lisp :tangle yes
-    (org-ref-bibliography-notes "~/org/bibliography/notes.org")
-    (org-ref-default-bibliography '("~/org/bibliography/references.bib"))
-    (org-ref-pdf-directory "~/org/bibliography/pdfs/")
+**** Bibliography
+Set the location of the default bib database.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
+  (bibtex-completion-bibliography "~/org/bibliography/references.bib")
+#+end_src
+
+**** PDF library
+Set path to the PDF library. Use the Org machinery to open PDF files with the
+correct viewer.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
+  (bibtex-completion-library-path "~/org/bibliography/pdfs")
+  (bibtex-completion-pdf-open-function 'org-open-file)
 #+end_src
 
 **** Reftex
-     Set default bibliography for RefTeX to the bibliography used by
-     org-ref.
-#+begin_src emacs-lisp :tangle yes
-    (reftex-default-bibliography "~/org/bibliography/references.bib")
+Set default bibliography for RefTeX to the bibliography used by
+org-ref.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-custom
+  (reftex-default-bibliography "~/org/bibliography/references.bib")
 #+end_src
 
-**** helm-bibtex integration
-     Use the advanced menu of [[*helm-bibtex][helm-bibtex]] with the org-ref bibliography.
-#+begin_src emacs-lisp :tangle yes
-    (bibtex-completion-bibliography "~/org/bibliography/references.bib")
-    (bibtex-completion-library-path "~/org/bibliography/pdfs")
-    (bibtex-completion-notes-path "~/org/bibliography/helm-bibtex-notes")
-#+end_src
-     And use the Org machinery to open PDF files with the correct viewer.
-#+begin_src emacs-lisp :tangle yes
-    (bibtex-completion-pdf-open-function 'org-open-file)
+**** Submodules
+Load additional libraries that org-ref provides.
+
+***** helm-bibtex
+Use the advanced menu of [[*helm-bibtex][helm-bibtex]] with the org-ref bibliography.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
+  (require 'org-ref-helm)
 #+end_src
 
-**** doi-utils
-     Allow for retrieval of bibliography info and PDFs via DOIs.
-#+begin_src emacs-lisp :tangle yes
-    :config
+***** doi-utils
+Allow for retrieval of bibliography info and PDFs via DOIs.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
     (require 'doi-utils)
 #+end_src
 
-**** org-ref-arxiv
-     Add entries from [[http://arxiv.org][arxiv.org]] links.
-#+begin_src emacs-lisp :tangle yes
+***** org-ref-arxiv
+Add entries from [[http://arxiv.org][arxiv.org]] links.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
     (require 'org-ref-arxiv)
 #+end_src
 
-**** org-ref-sci-id
-     Define new link schemes for [[http://www.orcid.org][ORCID]] and [[https://www.researcherid.com][ResearcherID]] URIs.
-#+begin_src emacs-lisp :tangle yes
-  (require 'org-ref-sci-id))
+***** org-ref-sci-id
+Define new link schemes for [[http://www.orcid.org][ORCID]] and [[https://www.researcherid.com][ResearcherID]] URIs.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-ref-config
+  (require 'org-ref-sci-id)
 #+end_src
 
 *** helm-bibtex
