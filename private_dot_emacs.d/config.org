@@ -1986,6 +1986,70 @@ it, let's also set the shell to Bash.
           (:screenrc . "/dev/null")))
 #+end_src
 
+*** Entities
+
+**** Entity preview
+     By default, activate UTF8 entity rendering in all Org buffers (consult the
+     output of ~org-entities-help~ for a list of recognized entities).
+     #+begin_src emacs-lisp :tangle yes
+       (setq org-pretty-entities t)
+     #+end_src
+
+**** Subscripts and superscripts
+     Sometimes, you want to put an underscore/caret in plaintext just because,
+     but Org interprets it as an entity and tries to pretty-print your text by
+     putting the text that follows are subscript/superscript (or simply makes it
+     disappear, when inside a terminal).
+
+     Make it so that braces are required in order to recognize such entities.
+     #+begin_src emacs-lisp :tangle yes
+       (setq org-use-sub-superscripts '{})
+     #+end_src
+
+*** Exporting
+
+**** Markdown
+Enable exporting to Markdown files.
+#+begin_src emacs-lisp :tangle yes
+  (require 'ox-md)
+#+end_src
+
+*** Key binds
+**** org-capture
+     Bind =C-c r= to quickly capture stuff.
+#+begin_src emacs-lisp :tangle yes
+  (define-key global-map "\C-cr" 'org-capture)
+#+end_src
+
+**** Agenda
+     Quick access to the agenda via =C-c a=.
+#+begin_src emacs-lisp :tangle yes
+  (define-key global-map "\C-ca" 'org-agenda)
+#+end_src
+
+**** Capturing links
+     Press =C-c l= anywhere to store an Org link pointing to the
+     nearest anchor point.
+#+begin_src emacs-lisp :tangle yes
+  ;; Quick link capture
+  (define-key global-map "\C-cl" 'org-store-link)
+#+end_src
+
+**** metaleft and metaright
+     Since I am moving in Evil's normal mode most of the time, remap the =C-c
+     C-x l= and =C-c C-x r= so that =l= and =r= are replaced by =h= and =l=.
+     #+begin_src emacs-lisp :tangle yes
+       (define-key org-mode-map (kbd "C-c C-x h") 'org-metaleft)
+       (define-key org-mode-map (kbd "C-c C-x l") 'org-metaright)
+       (define-key org-mode-map (kbd "C-c C-x r") nil)
+     #+end_src
+
+**** Minor modes for Org buffers
+     Activate auto-filling in all Org buffers.
+#+begin_src emacs-lisp :tangle yes
+  (add-hook 'org-mode-hook 'auto-fill-mode)
+#+end_src
+
 *** Links
 
 **** Following links
@@ -2071,70 +2135,6 @@ properly and avoids the ugly boxes).
          pdflang={%L},
          colorlinks=true}
         ")
-#+end_src
-
-*** Entities
-
-**** Entity preview
-     By default, activate UTF8 entity rendering in all Org buffers (consult the
-     output of ~org-entities-help~ for a list of recognized entities).
-     #+begin_src emacs-lisp :tangle yes
-       (setq org-pretty-entities t)
-     #+end_src
-
-**** Subscripts and superscripts
-     Sometimes, you want to put an underscore/caret in plaintext just because,
-     but Org interprets it as an entity and tries to pretty-print your text by
-     putting the text that follows are subscript/superscript (or simply makes it
-     disappear, when inside a terminal).
-
-     Make it so that braces are required in order to recognize such entities.
-     #+begin_src emacs-lisp :tangle yes
-       (setq org-use-sub-superscripts '{})
-     #+end_src
-
-*** Exporting
-
-**** Markdown
-Enable exporting to Markdown files.
-#+begin_src emacs-lisp :tangle yes
-  (require 'ox-md)
-#+end_src
-
-*** Key binds
-**** org-capture
-     Bind =C-c r= to quickly capture stuff.
-#+begin_src emacs-lisp :tangle yes
-  (define-key global-map "\C-cr" 'org-capture)
-#+end_src
-
-**** Agenda
-     Quick access to the agenda via =C-c a=.
-#+begin_src emacs-lisp :tangle yes
-  (define-key global-map "\C-ca" 'org-agenda)
-#+end_src
-
-**** Capturing links
-     Press =C-c l= anywhere to store an Org link pointing to the
-     nearest anchor point.
-#+begin_src emacs-lisp :tangle yes
-  ;; Quick link capture
-  (define-key global-map "\C-cl" 'org-store-link)
-#+end_src
-
-**** metaleft and metaright
-     Since I am moving in Evil's normal mode most of the time, remap the =C-c
-     C-x l= and =C-c C-x r= so that =l= and =r= are replaced by =h= and =l=.
-     #+begin_src emacs-lisp :tangle yes
-       (define-key org-mode-map (kbd "C-c C-x h") 'org-metaleft)
-       (define-key org-mode-map (kbd "C-c C-x l") 'org-metaright)
-       (define-key org-mode-map (kbd "C-c C-x r") nil)
-     #+end_src
-
-**** Minor modes for Org buffers
-     Activate auto-filling in all Org buffers.
-#+begin_src emacs-lisp :tangle yes
-  (add-hook 'org-mode-hook 'auto-fill-mode)
 #+end_src
 
 *** org-contrib
