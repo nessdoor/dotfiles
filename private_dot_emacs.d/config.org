@@ -2157,6 +2157,13 @@ Enable exporting to Markdown files.
   (require 'ox-md)
 #+end_src
 
+*** Footnotes
+Automatically renumber and sort footnotes to maintain some consistency between
+numeric labels and the order in which they appear.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-footnote-auto-adjust t)
+#+end_src
+
 *** Key binds
 **** org-capture
      Bind =C-c r= to quickly capture stuff.
