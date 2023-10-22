@@ -409,6 +409,87 @@ undo tree functionality.
   (add-hook 'undo-tree-mode-hook #'disable-ut-save-for-encrypted-files)
 #+end_src
 
+***** Avoiding unnecessary writes
+When persistent undo histories are enabled, undo-tree saves its trees every time
+we kill a buffer, irrespective of whether the file was actually changed. What's
+worse, due to a side-effect in [[help:undo-tree-save-history][undo-tree-save-history]], unmodified files get an
+empty tree that is immediately serialized to disk, needlessly littering the [[*Persistent trees
+directory][persistent trees directory]]. In order to circumvent this issue, we
+combine two approaches: the first relies on a new buffer-local variable, called
+~buffer-undo-tree-hash~, which stores the hash of the undo tree that was loaded
+from disk for the current file, or ~nil~ if no file was found; the other simply
+checks whether the tree that is about to be saved is empty and, if it is,
+forgoes the write.
+
+First, we define the new hash variable and we force it to be buffer-local.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (defvar buffer-undo-tree-hash nil
+    "Hash of the `buffer-undo-tree' of the current buffer.")
+  (put 'buffer-undo-tree-hash 'permanent-local t)
+  (make-variable-buffer-local 'buffer-undo-tree-hash)
+#+end_src
+Then, we define a function that calculates the hash of the persistent tree of
+the current buffer. The most straight-forward (but inefficient) way of doing it
+is by serializing the tree into a buffer and then hashing its contents.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (defun undo-tree-compute-hash ()
+    "Calculate the SHA1 hash of the `undo-tree' of the current buffer.
+
+  If the undo tree of the current buffer is nil, then its hash will also be nil.
+
+  If `undo-tree-mode' is disabled, this function returns nil."
+    (let ((tree buffer-undo-tree))
+      (if (and undo-tree-mode tree (not (eq tree t)))
+          (with-temp-buffer
+            (undo-tree-serialize tree)
+            (sha1 (current-buffer)))
+        nil)))
+#+end_src
+Finally, we wire this function into the loading mechanism by [[info:elisp#Advising Functions][advising]] the
+[[help:undo-tree-load-history][undo-tree-load-history]] function. This guarantees that the hash is updated both
+when a tree is loaded automatically and when it is loaded on-demand.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (advice-add 'undo-tree-load-history
+              :after
+              (lambda (&rest _args)
+                "Set the local variable `buffer-undo-tree-hash' with the result of
+  calling `undo-tree-compute-hash'."
+                (setq-local buffer-undo-tree-hash (undo-tree-compute-hash)))
+              '((name . set-buffer-undo-tree-hash)))
+#+end_src
+
+In order to enforce both the hash and size constraints, we gate the
+[[help:undo-tree-save-history-from-hook][undo-tree-save-history-from-hook]] function, which is responsible for
+automatically saving undo trees. We advise this function instead of the main
+[[help:undo-tree-save-history][undo-tree-save-history]] because we are only interested in avoiding the spurious
+automatic saves, and not the interactive requests for trees to be saved.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (advice-add 'undo-tree-save-history-from-hook
+              :before-until
+              (lambda (&rest _args)
+                "Avoid saving history if this is identical to the one that was
+  loaded from file or if it is, otherwise, empty.
+
+  This advice uses the value of `buffer-undo-tree-hash' to check for equality with
+  the tree that is to be saved."
+                (when (and buffer-file-name
+                           (not (eq buffer-undo-tree t))
+                           (not (eq buffer-undo-list t)))
+                  (progn
+                    (undo-list-transfer-to-tree)
+                    (or (and (null buffer-undo-tree-hash)
+                             (= 0 (undo-tree-size buffer-undo-tree)))
+                        (string= buffer-undo-tree-hash
+                                 (undo-tree-compute-hash))))))
+              '((name . undo-tree-save-if-necessary)))
+#+end_src
+Unfortunately, we have to duplicate some of the checks performed internally by
+the core function, and we also need to invoke the undocumented
+~undo-list-transfer-to-tree~ in order to be consistent with the true state of
+the undo-redo system. Funnily enough, it is exactly this function that is the
+culprit of the spurious writes for unmodified files, as it forces an empty tree
+to be created if one is not present, already.
+
 **** Limits
 Since we're storing undo trees semi-permanently, we have to tighten the memory
 bounds, otherwise we risk overloading Emacs every time we open a long-lived
