@@ -496,7 +496,18 @@ the core function, and we also need to invoke the undocumented
 ~undo-list-transfer-to-tree~ in order to be consistent with the true state of
 the undo-redo system. Funnily enough, it is exactly this function that is the
 culprit of the spurious writes for unmodified files, as it forces an empty tree
-to be created if one is not present, already.
+to be created if one is not present, already. Finally, we have to update the
+hash of the tree that we just saved, otherwise the spurious writes will reappear
+just after the first save.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (advice-add 'undo-tree-save-history-from-hook
+              :after
+              (lambda (&rest _args)
+                "Set the local variable `buffer-undo-tree-hash' with the result of
+  calling `undo-tree-compute-hash'."
+                (setq-local buffer-undo-tree-hash (undo-tree-compute-hash)))
+              '((name . set-buffer-undo-tree-hash)))
+#+end_src
 
 **** Limits
 Since we're storing undo trees semi-permanently, we have to tighten the memory
