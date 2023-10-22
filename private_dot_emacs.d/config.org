@@ -1,5 +1,6 @@
--*- eval: (display-line-numbers-mode); -*-
+# -*- eval: (display-line-numbers-mode); -*-
 #+STARTUP: overview hidestars
+#+PROPERTY: header-args :results silent
 #+TAGS: TEMPORARY(t) BROKEN(b) DISABLED(d)
 
 * Package management
