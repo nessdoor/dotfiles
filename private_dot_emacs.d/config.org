@@ -110,6 +110,14 @@ the regexp of EPA-recognized filenames.
     (add-to-list 'encrypted-file-name-regexps epa-file-name-regexp))
 #+end_src
 
+** External definitions
+
+*** John McCarthy's database of random facts
+Load [[https://www-formal.stanford.edu/jmc/facts.txt][JMC's database]] of random physics constants and other stuff.
+#+begin_src emacs-lisp :tangle yes
+  (load (concat user-emacs-directory "jmc-facts"))
+#+end_src
+
 * Customize
 ** Customize plug-in point
     Set the path where M-x customize saves its settings, and load from it.
