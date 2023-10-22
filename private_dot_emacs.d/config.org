@@ -76,6 +76,40 @@ uses them, or [[*Smart tabs][smart tabbing]] is active.
     (setq indent-tabs-mode t))
 #+end_src
 
+*** Detecting encrypted files
+Emacs can open and edit a variety of encrypted file formats. Special precautions
+have to be taken when handling this kind of files, so we define here a unified
+API for registering new kinds of encrypted formats and querying whether the
+current buffer is associated with an encrypted file.
+
+First, we define a global list containing the regexps that match encrypted file
+formats.
+#+begin_src emacs-lisp :tangle yes
+  (defvar encrypted-file-name-regexps '()
+    "List of regexps that match filenames of encrypted files.")
+#+end_src
+Then, we define a simple predicate that checks whether a filename is associated
+with an encrypted file type.
+#+begin_src emacs-lisp :tangle yes
+  (defun encrypted-file-name-p (filename)
+    "Say whether FILENAME looks like the name of an encrypted file.
+
+  This function matches the regexps contained in
+  `encrypted-file-name-regexps' against the supplied string."
+    (seq-reduce
+     (lambda (acc regexp)
+       (or acc
+           (not (null (string-match-p regexp filename)))))
+     encrypted-file-name-regexps nil))
+#+end_src
+
+Now, as Emacs already comes with [[info:epa#Top][EPA]], initialize the regexp list at least with
+the regexp of EPA-recognized filenames.
+#+begin_src emacs-lisp :tangle yes
+  (with-eval-after-load 'epa
+    (add-to-list 'encrypted-file-name-regexps epa-file-name-regexp))
+#+end_src
+
 * Customize
 ** Customize plug-in point
     Set the path where M-x customize saves its settings, and load from it.
@@ -102,11 +136,13 @@ uses them, or [[*Smart tabs][smart tabbing]] is active.
 *** Age
 [[https://github.com/anticomputer/age.el][Repo]]
 
-Allow Emacs to operate on [[https://github.com/FiloSottile/age][Age]]-encrypted files.
+Allow Emacs to operate on [[https://github.com/FiloSottile/age][Age]]-encrypted files. Also register the regexp that
+matches Age filenames as a regexp of an [[*Detecting encrypted files][encrypted file]].
 #+begin_src emacs-lisp :tangle yes
   (use-package age
     :ensure t
     :config
+    (add-to-list 'encrypted-file-name-regexps age-file-name-regexp)
     (age-file-enable))
 #+end_src
 
@@ -301,8 +337,8 @@ activated.
     #+end_src
 
 *** undo-tree
-    Replace the stock undo system with [[https://github.com/apchamberlain/undo-tree.el][undo-tree]], allowing for forking
-    undo/redo histories.
+Replace the stock undo system with [[https://github.com/apchamberlain/undo-tree.el][undo-tree]], allowing for forking
+undo/redo histories.
 #+begin_src emacs-lisp :tangle yes :noweb yes
   (use-package undo-tree
     :ensure t
@@ -321,15 +357,11 @@ Allow undo-tree to manage undos/redos limited to regions.
 
 **** Incompatible modes
 By default, undo-tree is inactive only in buffers without a backing file and
-[[help:term-mode][term-mode]] buffers.
-
-We already activated the mode in more buffers than we should with the setting in
-[[*Tree undo system][the settings related to Evil]], so we should add more incompatible modes to the
-list.
-
-In addition, there are some modes that, apparently, haven't been taken into
-account by the creator (which is a legitimate thing, given the feature-creep of
-Emacs).
+[[help:term-mode][term-mode]] buffers. We already activated the mode in more buffers than we should
+as part of the settings in [[*Tree undo system][the Evil configuration]], so we should add more
+incompatible modes to the list. In addition, there are some obviously
+incompatible modes that, apparently, haven't been taken into account by the
+creator (which is a legitimate thing, given the feature-creep of Emacs).
 #+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
   (add-to-list 'undo-tree-incompatible-major-modes
                'image-mode)
@@ -340,16 +372,20 @@ Emacs).
 #+end_src
 
 **** Persistent undo trees
-undo-tree now supports persistent undo trees. By default, these files are saved
-beside the original. Use the same policy for backup files, instead (probably,
-this makes backup files obsolete).
+undo-tree now supports persistent undo trees, saved between sessions by
+serializing them into specialized files.
+
+***** Persistent trees directory
+By default, undo trees are saved beside the original files. Instead, we will use
+the same [[*Destination of backup files][policy we established for backup files]] and store them into a
+centralized =undo/= directory under the Emacs user directory.
 #+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
   (setq undo-tree-history-directory-alist
         `(("." . ,(concat user-emacs-directory
                           (convert-standard-filename "undo/")))))
 #+end_src
 
-**** Compression
+***** Compression
 Transparently compress undo history files using =gzip= (as per [[https://www.dr-qubit.org/undo-tree/undo-tree.txt][undo-tree.txt]]).
 #+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
   (defadvice undo-tree-make-history-save-file-name
@@ -357,9 +393,26 @@ Transparently compress undo history files using =gzip= (as per [[https://www.dr-
     (setq ad-return-value (concat ad-return-value ".gz")))
 #+end_src
 
+***** Sensitive files
+Certain files, like encrypted files opened via [[info:epa#Top][EPA]], contain sensitive
+information that should not be persisted into clear-text undo tree
+serializations. Therefore, [[*Detecting encrypted files][if the file is encrypted]], deactivate the persistent
+undo tree functionality.
+#+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
+  (defun disable-ut-save-for-encrypted-files ()
+    "Disable the `undo-tree-auto-save-history' functionality for encrypted files.
+
+  This function is meant to be run as a hook as part of `undo-tree-mode-hook'."
+    (when (encrypted-file-name-p (buffer-name))
+      (setq-local undo-tree-auto-save-history nil)))
+
+  (add-hook 'undo-tree-mode-hook #'disable-ut-save-for-encrypted-files)
+#+end_src
+
 **** Limits
 Since we're storing undo trees semi-permanently, we have to tighten the memory
-bounds, otherwise we overload Emacs every time we open a long-lived file.
+bounds, otherwise we risk overloading Emacs every time we open a long-lived
+file.
 #+begin_src emacs-lisp :tangle no :noweb-ref ut-additional-conf
   (setq undo-tree-limit 4000000
         undo-tree-strong-limit 8000000
