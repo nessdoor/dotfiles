@@ -2164,6 +2164,17 @@ numeric labels and the order in which they appear.
   (setq org-footnote-auto-adjust t)
 #+end_src
 
+*** Images
+When displaying images in-line, resize them to fit within 60% of the
+(approximate) maximum width that text occupies. If no size has been specified
+for text, default to 10 pixels.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-image-actual-width
+        (* (round (* fill-column 0.6))
+           (or (font-get (face-attribute 'default :font t) :size)
+               10))
+#+end_src
+
 *** Key binds
 **** org-capture
      Bind =C-c r= to quickly capture stuff.
