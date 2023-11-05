@@ -155,24 +155,50 @@ matches Age filenames as a regexp of an [[*Detecting encrypted files][encrypted 
 #+end_src
 
 *** Native complete
-    [[https://github.com/CeleritasCelery/emacs-native-shell-complete][Repo]]
+[[https://github.com/CeleritasCelery/emacs-native-shell-complete][Repo]]
 
-    Enable Bash completions inside shell-mode buffers. Register an asynchronous
-    [[*Company][Company]] backend and shortens the list of active backends in shell mode.
-    #+begin_src emacs-lisp :tangle yes
-      (use-package company-native-complete
-        :ensure t
-        :demand
-        :after company
-        :hook (shell-mode . (lambda nil
-                              (setq-local company-backends
-                                          ;; Only backends that might be relevant for a shell
-                                          '((company-files company-native-complete)
-                                             company-capf
-                                             company-dabbrev))))
-        :config
-        (native-complete-setup-bash))
-    #+end_src
+Enable Bash completions inside shell-mode buffers. Register an asynchronous
+[[*Company][Company]] backend and shortens the list of active backends in shell mode.
+#+begin_src emacs-lisp :tangle yes :noweb no-export
+  (use-package company-native-complete
+    :ensure t
+    :demand
+    :after company
+    :hook (shell-mode . (lambda nil
+                          (setq-local company-backends
+                                      ;; Only backends that might be relevant for a shell
+                                      '((company-files company-native-complete)
+                                         company-capf
+                                         company-dabbrev))))
+    :config
+    <<native-complete-setup>>)
+#+end_src
+
+**** Setup
+This package relies on a small procedure named [[help:native-complete-setup-bash][native-complete-setup-bash]] to
+configure Comint and the shell subsystem that deals with Bash; in particular,
+Comint is configured to emulate a VT-50 terminal instead of a 'dumb'
+one. Unfortunately, this interferes with [[*Babel][Org Babel]], as it causes extraneous
+characters to end up in the output of shell scripts evaluated by Org.
+
+To avoid this, we will wrap [[help:shell][the shell command]] in a [[info:elisp#Dynamic Binding][dynamic let binding]] that
+shadows the two affected global variables, [[help:comint-terminfo-terminal][comint-terminfo-terminal]] and
+[[help:explicit-bash-args][explicit-bash-args]], and assigns them their global values. Then, before calling
+the original ~shell~ function, we call the setup function, which will modify the
+dynamically-bound local variables instead of the global ones.
+#+begin_src emacs-lisp :tangle no :noweb-ref native-complete-setup
+  (advice-add 'shell
+              :around
+              (lambda (fun &rest args)
+                "Configure `comint-terminfo-terminal' and `explicit-bash-args' so
+  that native completions can be provided, but do so inside a local dynamic scope
+  to protect system-wide defaults."
+                (let ((comint-terminfo-terminal comint-terminfo-terminal)
+                      (explicit-bash-args explicit-bash-args))
+                  (native-complete-setup-bash)
+                  (apply fun args)))
+              '((name . setup-native-complete)))
+#+end_src
 
 *** Delight
     Ensure that [[https://elpa.gnu.org/packages/delight.html][Delight]] is installed, since it will be used for hiding
