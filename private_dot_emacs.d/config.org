@@ -1632,6 +1632,15 @@ Teach Flycheck how to validate PlantUML buffers.
   (require 'org-roam-protocol)
 #+end_src
 
+**** Node title template
+When displaying the titles of nodes, also include some of the Org tags applied
+to them (as suggested in the [[info:org-roam#Customizing Node Completions][info pages]].
+#+begin_src emacs-lisp :tangle yes
+  (setq org-roam-node-display-template
+        (concat "${title:*} "
+                (propertize "${tags:10}" 'face 'org-tag)))
+#+end_src
+
 **** Templates
      Append the following custom capture templates.
 
