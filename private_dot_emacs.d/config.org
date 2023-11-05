@@ -1592,84 +1592,71 @@ Teach Flycheck how to validate PlantUML buffers.
 #+end_src
 
 *** Roam
-    [[https://www.orgroam.com/manual.html][Manual]]
+[[https://www.orgroam.com/manual.html][Manual]]
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes :noweb no-export
   (use-package org-roam
     :ensure t
     :after org
+    :hook
+    <<roam-setup-hook>>
+    :custom
+    <<roam-variables>>
+    :bind
+    <<roam-keys>>
+    :config
+    <<roam-extra-config>>)
 #+end_src
-    Load org-roam right after initialization, making it globally
-    available in any buffer.
-#+begin_src emacs-lisp :tangle yes
-  :hook
+Load org-roam right after initialization, making it globally
+available in any buffer.
+#+begin_src emacs-lisp :tangle no :noweb-ref roam-setup-hook
   (after-init . org-roam-db-autosync-enable)
 #+end_src
 
 **** Roam directory
-     All Roam notes will be stored under =org/roam=.
-#+begin_src emacs-lisp :tangle yes
-  :custom
+All Roam notes will be stored under =org/roam=.
+#+begin_src emacs-lisp :tangle no :noweb-ref roam-variables
   (org-roam-directory "~/org/roam")
-#+end_src
-
-**** Key mappings
-     - =C-c o= to enter the interactive selection/creation of a new
-       Roam note to write.
-     - =C-c i= to insert a Roam link at point with interactive
-       selection.
-     - =C-c m= to toggle the Roam backlinks buffer.
-#+begin_src emacs-lisp :tangle yes
-  :bind (("C-c o" . org-roam-node-find)
-         ("C-c i" . org-roam-node-insert)
-         ("C-c m" . org-roam-buffer-toggle))
-#+end_src
-
-**** Roam protocol
-     Load and enable the [[https://www.orgroam.com/manual.html#Roam-Protocol][Roam protocols]].
-#+begin_src emacs-lisp :tangle yes
-  :config
-  (require 'org-roam-protocol)
 #+end_src
 
 **** Node title template
 When displaying the titles of nodes, also include some of the Org tags applied
 to them (as suggested in the [[info:org-roam#Customizing Node Completions][info pages]].
-#+begin_src emacs-lisp :tangle yes
-  (setq org-roam-node-display-template
-        (concat "${title:*} "
-                (propertize "${tags:10}" 'face 'org-tag)))
+#+begin_src emacs-lisp :tangle no :noweb-ref roam-variables
+  (org-roam-node-display-template
+   (concat "${title:*} "
+           (propertize "${tags:10}" 'face 'org-tag)))
 #+end_src
 
-**** Templates
-     Append the following custom capture templates.
+**** Key mappings
+- =C-c o= to enter the interactive selection/creation of a new Roam note to
+  write.
+- =C-c i= to insert a Roam link at point with interactive selection.
+- =C-c m= to toggle the Roam backlinks buffer.
+#+begin_src emacs-lisp :tangle no :noweb-ref roam-keys
+  (("C-c o" . org-roam-node-find)
+   ("C-c i" . org-roam-node-insert)
+   ("C-c m" . org-roam-buffer-toggle))
+#+end_src
 
-     For some reason, the temporary buffer thing doesn't work.
-#+begin_src emacs-lisp :tangle yes
-  ;;  :config
-  ;;  (push
-  ;;   '("p" "paper" plain #'org-roam-capture--get-point "%?"
-  ;;     :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}
-  ;;#+roam_refs: %(with-temp-buffer (org-ref-insert-link nil) (buffer-string))
-  ;;#+filetags: paper
-  ;;")
-  ;;   :unnarrowed t)
-  ;;   org-roam-capture-templates)
-  )
+**** Roam protocol
+Load and enable the [[https://www.orgroam.com/manual.html#Roam-Protocol][Roam protocols]].
+#+begin_src emacs-lisp :tangle no :noweb-ref roam-extra-config
+  (require 'org-roam-protocol)
 #+end_src
 
 *** Org Roam BibTeX
-    [[https://github.com/org-roam/org-roam-bibtex/blob/master/doc/orb-manual.org][Manual]]
+[[https://github.com/org-roam/org-roam-bibtex/blob/master/doc/orb-manual.org][Manual]]
 
-    Take notes about papers and store them into the hyperlinked Roam stash.
-    #+begin_src emacs-lisp :tangle yes
-      (use-package org-roam-bibtex
-        :ensure t
-        :after (org-roam org-ref)
-        :delight org-roam-bibtex-mode
-        :config
-        (org-roam-bibtex-mode))
-    #+end_src
+Take notes about papers and store them into the hyperlinked Roam stash.
+#+begin_src emacs-lisp :tangle yes
+  (use-package org-roam-bibtex
+    :ensure t
+    :after (org-roam org-ref)
+    :delight org-roam-bibtex-mode
+    :config
+    (org-roam-bibtex-mode))
+#+end_src
 
 ** Email support
 
