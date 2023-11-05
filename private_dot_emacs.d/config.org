@@ -2104,6 +2104,21 @@ Make auto-completion available to [[help:man][man]], like they are available for
           (default . t)))
 #+end_src
 
+*** Agenda
+
+**** Layout
+Restore the frame layout after quitting from the agenda.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-agenda-restore-windows-after-quit t)
+#+end_src
+
+**** Files
+#+begin_src emacs-lisp :tangle yes
+  (setq org-agenda-files '("~/org/scheduler/inbox.org"
+                           "~/org/scheduler/work.org"
+                           "~/org/scheduler/calendar.org"))
+#+end_src
+
 *** Babel
     Enable evaluation of additional languages by loading the appropriate modules
     (refer to the basic table in [[info:org#Languages][the Info page]] and the extended tables on the
@@ -2164,6 +2179,37 @@ it, let's also set the shell to Bash.
           (:cmd . "bash")
           (:terminal . "foot")
           (:screenrc . "/dev/null")))
+#+end_src
+
+*** Capture
+
+**** Templates
+#+begin_src emacs-lisp :tangle yes :noweb no-export :noweb-prefix no
+  (setq org-capture-templates '(<<org-capture-template>>))
+#+end_src
+
+***** Unprocessed agenda items
+Capture raw thoughts, events and stuff to do and put it in the inbox.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-capture-template
+  ("i" "Put raw item into inbox" entry
+        (file+headline "scheduler/inbox.org" "Capture")
+        "* %^{Item}\nAdded: %U\n%?")
+#+end_src
+
+***** Actionable task
+Atomic task destined for the main work list.
+#+begin_src emacs-lisp :tangle no :noweb-ref org-capture-template
+  ("t" "Task entry" entry
+        (file+headline "scheduler/work.org" "Actions")
+        "* TODO %^{Brief description} %^g\nAdded: %U%?")
+#+end_src
+
+***** Appointments
+Events for which some action is necessary (e.g., participation).
+#+begin_src emacs-lisp :tangle no :noweb-ref org-capture-template
+  ("a" "Appointment" entry
+        (file+headline "scheduler/calendar.org" "Appointments")
+        "* SCHED %^{Title} %^g\n%^T%?")
 #+end_src
 
 *** Entities
@@ -2364,6 +2410,30 @@ sections. In order to ignore a heading, this must be marked with the tag
 =:ignore:=.
 #+begin_src emacs-lisp :tangle no :noweb-ref ox-extras
   ignore-headlines
+#+end_src
+
+*** Refile
+
+**** Interactive refiling
+Allow refiling via progressive path definitions, but use the completion backend
+to construct it.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-refile-use-outline-path t
+        org-outline-path-complete-in-steps nil)
+#+end_src
+Also allow for creating the refiling target on demand, after asking the user
+whether that was their intention.
+#+begin_src emacs-lisp :tangle yes
+  (setq org-refile-allow-creating-parent-nodes 'confirm)
+#+end_src
+
+**** Targets
+#+begin_src emacs-lisp :tangle yes
+  (setq org-refile-targets `((nil . (:maxlevel . 3))
+                             (org-agenda-files . (:level . 1))
+                             (,(expand-file-name "scheduler/someday_maybe.org"
+                                                  org-directory)
+                               . (:level . 1))))
 #+end_src
 
 ** Shells
